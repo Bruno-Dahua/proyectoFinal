@@ -1,8 +1,5 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.CuentaDto;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CantidadNegativaException;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NoAlcanzaException;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -66,24 +63,13 @@ public class Cuenta {
         return this;
     }
 
-    public void debitarDeCuenta(int cantidadADebitar) throws NoAlcanzaException, CantidadNegativaException {
-        if (cantidadADebitar < 0) {
-            throw new CantidadNegativaException();
-        }
-
-        if (balance < cantidadADebitar) {
-            throw new NoAlcanzaException();
-        }
-        this.balance = this.balance - cantidadADebitar;
-    }
-
     public void setNumeroCuenta(long numeroCuenta) {
         this.numeroCuenta = numeroCuenta;
     }
 
-    public void forzaDebitoDeCuenta(int i) {
+    /*public void forzaDebitoDeCuenta(int i) {
         this.balance = this.balance - i;
-    }
+    }*/
 
     public long getNumeroCuenta() {
         return numeroCuenta;

@@ -28,13 +28,15 @@ public class ClienteController {
     @PostMapping
     public Cliente crearCliente(@RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException {
         clienteValidator.validate(clienteDto);
-        System.out.println("Creando Cliente");
-        return clienteService.darDeAltaCliente(clienteDto);
+        Cliente clienteCreado = clienteService.darDeAltaCliente(clienteDto);
+        System.out.println("Cliente creado con exito.");
+        return clienteCreado;
     }
 
     @GetMapping("/{dni}")
     public Cliente mostrarClientePorDni(@PathVariable long dni, WebRequest request){
-        return clienteService.buscarClientePorDni(dni);
+        Cliente clienteMostrar = clienteService.buscarClientePorDni(dni);
+        return clienteMostrar;
     }
 
     /*@PutMapping("/{dni}")
@@ -52,8 +54,10 @@ public class ClienteController {
     public ResponseEntity<String> eliminarClientePorDni(@PathVariable long dni) {
         boolean eliminado = clienteService.eliminarCliente(dni);
         if (eliminado) {
+            System.out.println("Cliente eliminado con exito.");
             return ResponseEntity.ok("Cliente eliminado exitosamente");
         } else {
+            System.out.println("No fue posible eliminar el cliente");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente no encontrado");
         }
     }
