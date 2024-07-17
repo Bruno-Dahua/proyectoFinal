@@ -31,11 +31,9 @@ public class ClienteValidator {
             throw new IllegalArgumentException("El BANCO ingresado no es valido.");
         }
 
-        /*
-        String dniString = String.valueOf(clienteDto.getDni()); // Convertir a String para usar matches
-        if (!dniString.matches("[0-9]+") || dniString.length() != 8) {
+        if (!clienteDto.getDni().matches("\\d{8}")) {
             throw new IllegalArgumentException("El DNI ingresado no es válido.");
-        }*/
+        }
     }
 }
 

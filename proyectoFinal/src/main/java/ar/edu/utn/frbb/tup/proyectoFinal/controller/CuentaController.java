@@ -20,13 +20,15 @@ public class CuentaController {
     private CuentaValidator cuentaValidator;
 
     @PostMapping("/{dni}")
-    public ResponseEntity<Cuenta> crearCuenta(@PathVariable long dni, @RequestBody CuentaDto cuentaDto) {
+    public ResponseEntity<String> crearCuenta(@PathVariable long dni, @RequestBody CuentaDto cuentaDto) {
         try {
             cuentaValidator.validate(cuentaDto, dni);
             Cuenta cuentaCreada = cuentaService.darDeAltaCuenta(cuentaDto, dni);
-            return new ResponseEntity<>(cuentaCreada, HttpStatus.CREATED);
+            return ResponseEntity.ok("Cuenta creada con exito.");
         } catch (TipoCuentaAlreadyExistException | CuentaAlreadyExistException | IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No fue posible crear la cuenta.");
         }
     }
+
+
 }

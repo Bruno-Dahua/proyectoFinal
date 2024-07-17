@@ -14,7 +14,7 @@ public class ClienteEntity extends BaseEntity {
     private final String nombre;
     private final String apellido;
     private final LocalDate fechaAlta;
-    private final LocalDate fechaNacimiento;
+    private final String fechaNacimiento;
     private final String banco;
     private List<Long> cuentas;
 
@@ -37,7 +37,7 @@ public class ClienteEntity extends BaseEntity {
 
     public Cliente toCliente() {
         Cliente cliente = new Cliente();
-        cliente.setDni(this.getId());
+        cliente.setDni(this.getId().toString());
         cliente.setNombre(this.nombre);
         cliente.setApellido(this.apellido);
         cliente.setTipoPersona(TipoPersona.fromString(this.tipoPersona));

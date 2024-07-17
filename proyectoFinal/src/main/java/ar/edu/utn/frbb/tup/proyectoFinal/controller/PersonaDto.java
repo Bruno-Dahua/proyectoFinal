@@ -3,7 +3,7 @@ package ar.edu.utn.frbb.tup.proyectoFinal.controller;
 public class PersonaDto {
     private String nombre;
     private String apellido;
-    private long dni;
+    private String dni;
     private String fechaNacimiento;
 
     public String getNombre() {
@@ -22,11 +22,11 @@ public class PersonaDto {
         this.apellido = apellido;
     }
 
-    public long getDni() {
+    public String getDni() {
         return dni;
     }
 
-    public void setDni(long dni) {
+    public void setDni(String  dni) {
         this.dni = dni;
     }
 
