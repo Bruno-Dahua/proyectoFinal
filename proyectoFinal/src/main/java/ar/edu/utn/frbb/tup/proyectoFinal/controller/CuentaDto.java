@@ -4,41 +4,55 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoCuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
-import java.util.Random;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CuentaDto {
-//    private long numeroCuenta;
-//    LocalDateTime fechaCreacion;
-//    int balance;
-    TipoCuenta tipoCuenta;
-    Cliente titular;
-    TipoMoneda moneda;
+    @JsonIgnore
+    private long numeroCuenta;
 
-//    public long getNumeroCuenta() {
-//        return numeroCuenta;
-//    }
-//
-//    public void setNumeroCuenta(long numeroCuenta) {
-//        this.numeroCuenta = numeroCuenta;
-//    }
-//
-//    public LocalDateTime getFechaCreacion() {
-//        return fechaCreacion;
-//    }
-//
-//    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-//        this.fechaCreacion = fechaCreacion;
-//    }
-//
-//    public int getBalance() {
-//        return balance;
-//    }
-//
-//    public void setBalance(int balance) {
-//        this.balance = balance;
-//    }
+    @JsonIgnore
+    private LocalDateTime fechaCreacion;
+
+    @JsonIgnore
+    private int balance;
+
+    @JsonProperty("tipoCuenta")
+    private TipoCuenta tipoCuenta;
+
+    @JsonProperty("titular")
+    private ClienteDto titular;
+
+    @JsonProperty("moneda")
+    private TipoMoneda moneda;
+
+    public long getNumeroCuenta() {
+        return numeroCuenta;
+    }
+
+    public void setNumeroCuenta(long numeroCuenta) {
+        this.numeroCuenta = numeroCuenta;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
 
     public TipoCuenta getTipoCuenta() {
         return tipoCuenta;
@@ -48,13 +62,13 @@ public class CuentaDto {
         this.tipoCuenta = tipoCuenta;
     }
 
-//    public Cliente getTitular() {
-//        return titular;
-//    }
-//
-//    public void setTitular(Cliente titular) {
-//        this.titular = titular;
-//    }
+    public ClienteDto getTitular() {
+        return titular;
+    }
+
+    public void setTitular(ClienteDto titular) {
+        this.titular = titular;
+    }
 
     public TipoMoneda getMoneda() {
         return moneda;

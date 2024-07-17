@@ -24,7 +24,7 @@ public class CuentaService {
     //    2 - cuenta no soportada
     //    3 - cliente ya tiene cuenta de ese tipo
     //    4 - cuenta creada exitosamente
-    public Cuenta darDeAltaCuenta(CuentaDto cuentaDto, long dniTitular) throws CuentaAlreadyExistException, TipoCuentaAlreadyExistException {
+    public boolean darDeAltaCuenta(CuentaDto cuentaDto, long dniTitular) throws TipoCuentaAlreadyExistException {
         // Crear una nueva cuenta y asignar valores desde cuentaDto
         Cuenta cuenta = new Cuenta();
         cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
@@ -35,8 +35,8 @@ public class CuentaService {
         cuenta.setTitular(titular);
 
         // Verificar si la cuenta ya existe
-        if (cuentaDao.find(cuenta.getNumeroCuenta()) != null) {
-            throw new CuentaAlreadyExistException("La cuenta " + cuenta.getNumeroCuenta() + " ya existe.");
+        if (cuentaDao.find(cuenta.getTitular().getDni()) != null) {
+            return false;
         }
 
         // Agregar la cuenta al cliente
@@ -45,7 +45,7 @@ public class CuentaService {
         // Guardar la cuenta en la base de datos
         cuentaDao.save(cuenta);
 
-        return cuenta;
+        return true;
     }
 
 

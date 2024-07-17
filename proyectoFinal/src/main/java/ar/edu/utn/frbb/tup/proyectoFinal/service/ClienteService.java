@@ -10,6 +10,8 @@ import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -88,4 +90,12 @@ public class ClienteService {
         return clienteDao.delete(dni);
     }
 
+    public Set<Cuenta> getCuentasPorDni(long dni) {
+        Cliente cliente = clienteDao.find(dni, true); // Suponiendo que find busca un cliente por DNI
+        if (cliente != null) {
+            return cliente.getCuentas(); // Suponiendo que getCuentas() devuelve el Set de cuentas del cliente
+        } else {
+            return Collections.emptySet(); // Si el cliente no existe, devuelve un Set vacío
+        }
+    }
 }

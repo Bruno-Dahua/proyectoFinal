@@ -19,11 +19,11 @@ public class CuentaDao  extends AbstractBaseDao{
         getInMemoryDatabase().put(entity.getId(), entity);
     }
 
-    public Cuenta find(long id) {
-        if (getInMemoryDatabase().get(id) == null) {
+    public Cuenta find(long dni) {
+        if (getInMemoryDatabase().get(dni) == null) {
             return null;
         }
-        return ((CuentaEntity) getInMemoryDatabase().get(id)).toCuenta();
+        return ((CuentaEntity) getInMemoryDatabase().get(dni)).toCuenta();
     }
 
     public List<Cuenta> getCuentasByCliente(long dni) {
