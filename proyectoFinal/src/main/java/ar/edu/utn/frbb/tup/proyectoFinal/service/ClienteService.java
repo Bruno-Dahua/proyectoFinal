@@ -68,6 +68,19 @@ public class ClienteService {
         return cliente;
     }
 
+    public Cliente mostrarCliente(Cliente clienteMostrar){
+        Cliente clienteRespuesta = new Cliente();
+        clienteRespuesta.setDni(clienteMostrar.getDniString());
+        clienteRespuesta.setNombre(clienteMostrar.getNombre());
+        clienteRespuesta.setApellido(clienteMostrar.getApellido());
+        clienteRespuesta.setBanco(clienteMostrar.getBanco());
+        clienteRespuesta.setTipoPersona(clienteMostrar.getTipoPersona());
+        clienteRespuesta.setCuentas(clienteMostrar.getCuentas());
+        clienteRespuesta.setFechaNacimiento(clienteMostrar.getFechaNacimiento());
+        clienteRespuesta.setFechaAlta(clienteMostrar.getFechaAlta());
+        return clienteRespuesta;
+    }
+
     public void actualizarCliente(long dni, ClienteDto clienteActualizado) {
 
         Cliente clienteExistente = clienteDao.find(dni, false);

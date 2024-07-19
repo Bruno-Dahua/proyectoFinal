@@ -6,6 +6,7 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class ClienteEntity extends BaseEntity {
@@ -16,7 +17,7 @@ public class ClienteEntity extends BaseEntity {
     private final LocalDate fechaAlta;
     private final String fechaNacimiento;
     private final String banco;
-    private List<Long> cuentas;
+    private List<Cuenta> cuentas;
 
     public ClienteEntity(Cliente cliente) {
         super(cliente.getDni());
@@ -28,9 +29,7 @@ public class ClienteEntity extends BaseEntity {
         this.banco = cliente.getBanco();
         this.cuentas = new ArrayList<>();
         if (cliente.getCuentas() != null && !cliente.getCuentas().isEmpty()) {
-            for (Cuenta c: cliente.getCuentas()) {
-                cuentas.add(c.getNumeroCuenta());
-            }
+            cuentas.addAll(cliente.getCuentas());
         }
     }
 
@@ -44,6 +43,9 @@ public class ClienteEntity extends BaseEntity {
         cliente.setFechaAlta(this.fechaAlta);
         cliente.setFechaNacimiento(this.fechaNacimiento);
         cliente.setBanco(this.banco);
+
+        // Asignar la lista de cuentas al objeto Cliente
+        cliente.setCuentas(new HashSet<>(cuentas));
 
         return cliente;
     }

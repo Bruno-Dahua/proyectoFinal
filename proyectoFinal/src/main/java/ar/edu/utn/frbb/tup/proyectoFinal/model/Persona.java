@@ -1,5 +1,7 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -41,6 +43,7 @@ public class Persona {
         this.dni = dni;
     }
 
+    @JsonIgnore
     public String getDniString(){
         return dni;
     }

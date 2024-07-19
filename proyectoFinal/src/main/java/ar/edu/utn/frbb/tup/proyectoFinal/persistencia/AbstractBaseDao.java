@@ -13,4 +13,8 @@ public abstract class AbstractBaseDao {
         }
         return poorMansDatabase.get(getEntityName());
     }
+
+    public Map<Long, Object> getDatabase() {
+        return getInMemoryDatabase();
+    }
 }

@@ -1,9 +1,11 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.CuentaDto;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoCuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
+import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +17,8 @@ public class CuentaEntity extends BaseEntity {
     Long titular;
     long numeroCuenta;
     String moneda;
+
+    private ClienteDao clienteDao;
 
     public CuentaEntity(Cuenta cuenta) {
         super(cuenta.getNumeroCuenta());

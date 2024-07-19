@@ -1,15 +1,22 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDateTime;
 import java.util.Random;
 
+@JsonIgnoreProperties({"titular"})
 public class Cuenta {
     private long numeroCuenta;
     LocalDateTime fechaCreacion;
     int balance;
     TipoCuenta tipoCuenta;
-    Cliente titular;
     TipoMoneda moneda;
+
+    @JsonBackReference
+    Cliente titular;
+    
 
     public Cuenta() {
         this.numeroCuenta = new Random().nextLong();

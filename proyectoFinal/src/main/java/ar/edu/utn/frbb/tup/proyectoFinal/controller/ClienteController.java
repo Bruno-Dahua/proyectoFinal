@@ -41,7 +41,7 @@ public class ClienteController {
     @GetMapping("/{dni}")
     public Cliente mostrarClientePorDni(@PathVariable long dni, WebRequest request){
         Cliente clienteMostrar = clienteService.buscarClientePorDni(dni);
-        return clienteMostrar;
+        return clienteService.mostrarCliente(clienteMostrar);
     }
 
     //Endpoint para actualizar un cliente, buscandolo por su dni. Se valida el ingreso de los datos necesarios

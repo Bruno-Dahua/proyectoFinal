@@ -2,6 +2,8 @@ package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.ClienteDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -12,8 +14,8 @@ public class Cliente extends Persona{
     private String banco;
     private LocalDate fechaAlta;
 
-    @JsonIgnore  // Evita la serialización recursiva
-    private Set<Cuenta> cuentas = new HashSet<>();
+    @JsonManagedReference
+    private Set<Cuenta> cuentas;
 
     public Cliente() {
         super();
@@ -23,6 +25,7 @@ public class Cliente extends Persona{
         this.tipoPersona = TipoPersona.fromString(clienteDto.getTipoPersona());
         fechaAlta = LocalDate.now();
         banco = clienteDto.getBanco();
+        //cuentas = getCuentas();
     }
 
     public TipoPersona getTipoPersona() {
@@ -53,9 +56,16 @@ public class Cliente extends Persona{
         return cuentas;
     }
 
+    @JsonProperty
+    public void setCuentas(Set<Cuenta> cuentas) {
+        this.cuentas = cuentas;
+    }
+
     public void addCuenta(Cuenta cuenta) {
-        this.cuentas.add(cuenta);
-        cuenta.setTitular(this);
+        if (cuentas == null) {
+            cuentas = new HashSet<>();
+        }
+        cuentas.add(cuenta);
     }
 
     public boolean tieneCuenta(TipoCuenta tipoCuenta, TipoMoneda moneda) {
