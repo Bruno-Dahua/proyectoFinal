@@ -12,47 +12,15 @@ import java.time.LocalDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CuentaDto {
-    @JsonIgnore
-    private long numeroCuenta;
-
-    @JsonIgnore
-    private LocalDateTime fechaCreacion;
-
-    @JsonIgnore
-    private int balance;
 
     @JsonProperty("tipoCuenta")
     private TipoCuenta tipoCuenta;
 
     @JsonProperty("titular")
-    private ClienteDto titular;
+    private long titular;
 
     @JsonProperty("moneda")
     private TipoMoneda moneda;
-
-    public long getNumeroCuenta() {
-        return numeroCuenta;
-    }
-
-    public void setNumeroCuenta(long numeroCuenta) {
-        this.numeroCuenta = numeroCuenta;
-    }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
-    public int getBalance() {
-        return balance;
-    }
-
-    public void setBalance(int balance) {
-        this.balance = balance;
-    }
 
     public TipoCuenta getTipoCuenta() {
         return tipoCuenta;
@@ -62,11 +30,11 @@ public class CuentaDto {
         this.tipoCuenta = tipoCuenta;
     }
 
-    public ClienteDto getTitular() {
+    public long getTitular() {
         return titular;
     }
 
-    public void setTitular(ClienteDto titular) {
+    public void setTitular(long titular) {
         this.titular = titular;
     }
 

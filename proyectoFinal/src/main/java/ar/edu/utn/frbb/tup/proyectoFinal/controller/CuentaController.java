@@ -31,7 +31,7 @@ public class CuentaController {
     //y ademas el cliente no puede tener una cuenta del mismo tipo y moneda.
     @PostMapping
     public ResponseEntity<String> crearCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request) throws TipoCuentaAlreadyExistException {
-        long dni = Long.parseLong(cuentaDto.getTitular().getDni());
+        long dni = cuentaDto.getTitular();
         cuentaValidator.validate(cuentaDto, dni);
         boolean serviceCuenta;
         serviceCuenta = cuentaService.darDeAltaCuenta(cuentaDto, dni);

@@ -42,7 +42,7 @@ public class CuentaValidator {
             }
         }
 
-
+        /*
         try {
             LocalDate.parse(cuentaDto.getTitular().getFechaNacimiento());
             if (!(cuentaDto.getTitular().getFechaNacimiento()).equals(cliente.getFechaNacimiento())){
@@ -73,6 +73,6 @@ public class CuentaValidator {
 
         if (!cuentaDto.getTitular().getDni().matches("\\d{8}")) {
             throw new IllegalArgumentException("El DNI ingresado no es válido.");
-        }
+        }*/
     }
 }
