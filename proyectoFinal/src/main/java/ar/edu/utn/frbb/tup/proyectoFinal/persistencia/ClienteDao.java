@@ -45,6 +45,11 @@ public class ClienteDao extends AbstractBaseDao {
         return getInMemoryDatabase().remove(dni) != null;
     }
 
+    public void update(Cliente cliente) {
+        ClienteEntity entity = new ClienteEntity(cliente);
+        getInMemoryDatabase().put(cliente.getDni(), entity);
+    }
+
     @Override
     protected String getEntityName() {
         return "CLIENTE";

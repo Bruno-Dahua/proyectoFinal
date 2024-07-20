@@ -3,12 +3,16 @@ package ar.edu.utn.frbb.tup.proyectoFinal.service;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.CuentaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoCuenta;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.TipoCuentaAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 @Component
 public class CuentaService {
@@ -24,12 +28,13 @@ public class CuentaService {
     //    2 - cuenta no soportada
     //    3 - cliente ya tiene cuenta de ese tipo
     //    4 - cuenta creada exitosamente
-    public boolean darDeAltaCuenta(CuentaDto cuentaDto, long dniTitular) throws TipoCuentaAlreadyExistException {
+    public boolean darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException {
         // Crear una nueva cuenta y asignar valores desde cuentaDto
         Cuenta cuenta = new Cuenta();
         cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
         cuenta.setMoneda(cuentaDto.getMoneda());
 
+        long dniTitular = cuentaDto.getTitular();
         // Obtener el titular desde el clienteDao
         Cliente titular = clienteService.buscarClientePorDni(dniTitular);
         cuenta.setTitular(titular);
@@ -37,6 +42,14 @@ public class CuentaService {
         // Verificar si la cuenta ya existe
         if (cuentaDao.find(cuenta.getTitular().getDni()) != null) {
             return false;
+        }
+
+        if (titular.tieneCuenta(cuenta.getTipoCuenta(), cuenta.getMoneda())) {
+            throw new TipoCuentaAlreadyExistException("El cliente ya posee una cuenta de ese tipo y moneda");
+        }
+
+        if (cuentaDto.getTipoCuenta() == TipoCuenta.CUENTA_CORRIENTE && cuentaDto.getMoneda() == TipoMoneda.DOLARES) {
+            throw new IllegalArgumentException("No es posible crear una CUENTA CORRIENTE en DOLARES");
         }
 
         // Agregar la cuenta al cliente
@@ -48,8 +61,23 @@ public class CuentaService {
         return true;
     }
 
+    public void actualizarTitularCuenta(Cliente clienteActualizado, long dniAntiguo){
+        Set<Cuenta> cuentasCliente = cuentaDao.getCuentasByCliente(dniAntiguo);
 
-    public Cuenta find(long id) {
-        return cuentaDao.find(id);
+        for (Cuenta c : cuentasCliente){
+            c.setTitular(clienteActualizado);
+            cuentaDao.update(c);
+            clienteActualizado.addCuenta(c);
+        }
+    }
+
+
+    public boolean darDeBajaCuenta(long dniCliente, long numeroCuenta) {
+        Cliente cliente = clienteDao.find(dniCliente, false);
+        if (cliente != null){
+            return cuentaDao.eliminarCuentaByDniAndNumeroCuenta(dniCliente, numeroCuenta);
+        }else{
+            throw new IllegalArgumentException("No existe el cliente");
+        }
     }
 }

@@ -16,7 +16,7 @@ public class CuentaValidator {
     @Autowired
     private ClienteDao clienteDao;
 
-    public void validate(CuentaDto cuentaDto, long dni) {
+    public void validate(CuentaDto cuentaDto) {
         //valido que los campos de String que se estan ingresando sean los correctos (tipoCuenta y moneda)
         if (!"PESOS".equals(cuentaDto.getMoneda().name()) && !"DOLARES".equals(cuentaDto.getMoneda().name())) {
             throw new IllegalArgumentException("El tipo de moneda no es correcto");
@@ -29,7 +29,7 @@ public class CuentaValidator {
             throw new IllegalArgumentException("No es posible crear una CUENTA CORRIENTE en DOLARES");
         }
         //valido que el cliente exista
-        Cliente cliente = clienteDao.find(dni, true);
+        Cliente cliente = clienteDao.find(cuentaDto.getTitular(), true);
         if (cliente == null) {
             throw new IllegalArgumentException("Cliente no existe");
         }
@@ -41,38 +41,5 @@ public class CuentaValidator {
                 throw new IllegalArgumentException("El cliente ya tiene una cuenta con el mismo tipo y moneda.");
             }
         }
-
-        /*
-        try {
-            LocalDate.parse(cuentaDto.getTitular().getFechaNacimiento());
-            if (!(cuentaDto.getTitular().getFechaNacimiento()).equals(cliente.getFechaNacimiento())){
-                throw new IllegalArgumentException("La FECHA DE NACIMIENTO es incorrecta.");
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("La FECHA DE NACIMIENTO ingresada no es valida.");
-        }
-
-        //valido campos String para que no se ingresen caracteres que no sean letras
-        if (cuentaDto.getTitular().getNombre() == null || !cuentaDto.getTitular().getNombre().matches("[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+")) {
-            throw new IllegalArgumentException("El NOMBRE ingresado no es valido.");
-        }else if (!(cuentaDto.getTitular().getNombre()).equals(cliente.getNombre())){
-            throw new IllegalArgumentException("El NOMBRE es incorrecto.");
-        }
-
-        if (cuentaDto.getTitular().getApellido() == null || !cuentaDto.getTitular().getApellido().matches("[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+")){
-            throw new IllegalArgumentException("El APELLIDO ingresado no es valido");
-        }else if (!(cuentaDto.getTitular().getApellido()).equals(cliente.getApellido())){
-            throw new IllegalArgumentException("El APELLIDO es incorrecto.");
-        }
-
-        if (cuentaDto.getTitular().getBanco() == null || !cuentaDto.getTitular().getBanco().matches("[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+")){
-            throw new IllegalArgumentException("El BANCO ingresado no es valido.");
-        }else if (!(cuentaDto.getTitular().getBanco()).equals(cliente.getBanco())){
-            throw new IllegalArgumentException("El BANCO es incorrecto.");
-        }
-
-        if (!cuentaDto.getTitular().getDni().matches("\\d{8}")) {
-            throw new IllegalArgumentException("El DNI ingresado no es válido.");
-        }*/
     }
 }

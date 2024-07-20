@@ -29,16 +29,43 @@ public class CuentaDao  extends AbstractBaseDao{
     }
 
     public Set<Cuenta> getCuentasByCliente(long dni) {
-        Set<Cuenta> cuentasDelCliente = new HashSet<>();
-        for (Object object : getInMemoryDatabase().values()) {
-            CuentaEntity cuenta = ((CuentaEntity) object);
-            if (cuenta.getTitular().equals(dni)) {
-                Cuenta cuentaModel = cuenta.toCuenta();
-                if (!cuentasDelCliente.contains(cuentaModel)) {
-                    cuentasDelCliente.add(cuentaModel);
+        Set<Cuenta> cuentasCliente = new HashSet<>();
+
+        for (Object object : getInMemoryDatabase().values()){
+
+            CuentaEntity cuentaEntity = (CuentaEntity) object;
+
+            if(cuentaEntity.getTitular() == dni){
+                cuentasCliente.add(cuentaEntity.toCuenta());
+            }
+        }
+
+        return cuentasCliente;
+    }
+
+    public void update(Cuenta cuenta){
+        CuentaEntity cuentaEntity = new CuentaEntity(cuenta);
+        getInMemoryDatabase().put(cuenta.getNumeroCuenta(), cuentaEntity);
+    }
+
+    public boolean eliminarCuentaByDniAndNumeroCuenta(long dni, long numeroCuenta){
+        Cuenta cuenta = findCuentaByDniAndNumeroCuenta(dni, numeroCuenta);
+        if (cuenta != null) {
+            getDatabase().remove(numeroCuenta);
+            return true;
+        }
+        return false;
+    }
+
+    private Cuenta findCuentaByDniAndNumeroCuenta(long dni, long numeroCuenta) {
+        for (Object obj : getDatabase().values()) {
+            if (obj instanceof Cuenta) {
+                Cuenta cuenta = (Cuenta) obj;
+                if (cuenta.getTitular().getDni() == dni && cuenta.getNumeroCuenta() == numeroCuenta) {
+                    return cuenta;
                 }
             }
         }
-        return cuentasDelCliente;
+        return null;
     }
 }

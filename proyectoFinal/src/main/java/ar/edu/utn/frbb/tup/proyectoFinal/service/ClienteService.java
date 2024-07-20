@@ -20,13 +20,15 @@ public class ClienteService {
 
     @Autowired
     ClienteDao clienteDao;
+    @Autowired
+    private CuentaService cuentaService;
 
     public ClienteService(ClienteDao clienteDao) {
         this.clienteDao = clienteDao;
     }
 
     //devuelve un booleano para que en el controller pueda dar una buena o mala respuesta
-    public boolean darDeAltaCliente(ClienteDto clienteDto) throws ClienteAlreadyExistException {
+    public boolean darDeAltaCliente(ClienteDto clienteDto) {
 
         Cliente cliente = new Cliente(clienteDto);
 
@@ -45,15 +47,11 @@ public class ClienteService {
     }
 
     public void agregarCuenta(Cuenta cuenta, long dniTitular) throws TipoCuentaAlreadyExistException {
-
         Cliente titular = buscarClientePorDni(dniTitular);
         cuenta.setTitular(titular);
 
-        if (titular.tieneCuenta(cuenta.getTipoCuenta(), cuenta.getMoneda())) {
-            throw new TipoCuentaAlreadyExistException("El cliente ya posee una cuenta de ese tipo y moneda");
-        }
-
         titular.addCuenta(cuenta);
+
         clienteDao.save(titular);
     }
 
@@ -68,47 +66,56 @@ public class ClienteService {
         return cliente;
     }
 
-    public Cliente mostrarCliente(Cliente clienteMostrar){
-        Cliente clienteRespuesta = new Cliente();
-        clienteRespuesta.setDni(clienteMostrar.getDniString());
-        clienteRespuesta.setNombre(clienteMostrar.getNombre());
-        clienteRespuesta.setApellido(clienteMostrar.getApellido());
-        clienteRespuesta.setBanco(clienteMostrar.getBanco());
-        clienteRespuesta.setTipoPersona(clienteMostrar.getTipoPersona());
-        clienteRespuesta.setCuentas(clienteMostrar.getCuentas());
-        clienteRespuesta.setFechaNacimiento(clienteMostrar.getFechaNacimiento());
-        clienteRespuesta.setFechaAlta(clienteMostrar.getFechaAlta());
-        return clienteRespuesta;
-    }
+    public void actualizarCliente(long dniAntiguo, ClienteDto clienteDto) {
 
-    public void actualizarCliente(long dni, ClienteDto clienteActualizado) {
-
-        Cliente clienteExistente = clienteDao.find(dni, false);
+        Cliente clienteExistente = clienteDao.find(dniAntiguo, false);
 
         if (clienteExistente == null){
             throw new IllegalArgumentException("Cliente no encontrado");
         }
+        else if (clienteExistente.getEdad() < 18) {
+            throw new IllegalArgumentException("No fue posible actualizar el cliente");
+        }
 
-        clienteExistente.setNombre(clienteActualizado.getNombre());
-        clienteExistente.setApellido(clienteActualizado.getApellido());
-        clienteExistente.setFechaNacimiento(clienteActualizado.getFechaNacimiento());
-        clienteExistente.setBanco(clienteActualizado.getBanco());
-        clienteExistente.setTipoPersona(TipoPersona.fromString(clienteActualizado.getTipoPersona()));
-        clienteExistente.setDni(clienteActualizado.getDni());
+        Cliente clienteActualizado = toCliente(clienteDto);
+        clienteActualizado.setFechaAlta(clienteExistente.getFechaAlta());
 
-        clienteDao.save(clienteExistente);
+        cuentaService.actualizarTitularCuenta(clienteActualizado, dniAntiguo);
+
+        clienteDao.update(clienteActualizado);
+
+        clienteDao.delete(dniAntiguo);
     }
 
     public boolean eliminarCliente(long dni) {
-        return clienteDao.delete(dni);
+        Cliente clienteEliminar = clienteDao.find(dni, false);
+        if (clienteEliminar == null) {
+            throw new IllegalArgumentException("El cliente no existe");
+        }else {
+            return clienteDao.delete(dni);
+        }
     }
 
     public Set<Cuenta> getCuentasPorDni(long dni) {
-        Cliente cliente = clienteDao.find(dni, true); // Suponiendo que find busca un cliente por DNI
+        Cliente cliente = clienteDao.find(dni, true);
+
         if (cliente != null) {
-            return cliente.getCuentas(); // Suponiendo que getCuentas() devuelve el Set de cuentas del cliente
-        } else {
-            return Collections.emptySet(); // Si el cliente no existe, devuelve un Set vacío
+            return cliente.getCuentas();
+        } else if (cliente != null && cliente.getCuentas() == null) {
+            throw new IllegalArgumentException("El cliente no tiene cuentas");
+        }else{
+            throw new IllegalArgumentException("El cliente no existe");
         }
+    }
+
+    private Cliente toCliente(ClienteDto clienteDto) {
+        Cliente cliente = new Cliente();
+        cliente.setNombre(clienteDto.getNombre());
+        cliente.setApellido(clienteDto.getApellido());
+        cliente.setFechaNacimiento(clienteDto.getFechaNacimiento());
+        cliente.setBanco(clienteDto.getBanco());
+        cliente.setTipoPersona(TipoPersona.fromString(clienteDto.getTipoPersona()));
+        cliente.setDni(clienteDto.getDni());
+        return cliente;
     }
 }

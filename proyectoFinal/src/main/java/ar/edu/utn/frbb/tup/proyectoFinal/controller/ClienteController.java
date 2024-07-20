@@ -26,9 +26,7 @@ public class ClienteController {
     @PostMapping
     public ResponseEntity<String> crearCliente(@RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException {
         clienteValidator.validate(clienteDto);
-        boolean serviceCliente;
-        serviceCliente = clienteService.darDeAltaCliente(clienteDto);
-        if (serviceCliente) {
+        if (clienteService.darDeAltaCliente(clienteDto)) {
             System.out.println("Cliente creado con exito.");
             return ResponseEntity.ok("Cliente creado con exito.");
         } else {
@@ -40,8 +38,7 @@ public class ClienteController {
     //Endpoint para mostrar un cliente, buscandolo por su dni
     @GetMapping("/{dni}")
     public Cliente mostrarClientePorDni(@PathVariable long dni, WebRequest request){
-        Cliente clienteMostrar = clienteService.buscarClientePorDni(dni);
-        return clienteService.mostrarCliente(clienteMostrar);
+        return clienteService.buscarClientePorDni(dni);
     }
 
     //Endpoint para actualizar un cliente, buscandolo por su dni. Se valida el ingreso de los datos necesarios
@@ -50,14 +47,12 @@ public class ClienteController {
         clienteValidator.validate(clienteDto);
         clienteService.actualizarCliente(dni, clienteDto);
         return ResponseEntity.ok("Cliente actualizado con exito.");
-
     }
 
     //Endpoint para eliminar un cliente, buscandolo por su DNI
     @DeleteMapping("/{dni}")
     public ResponseEntity<String> eliminarClientePorDni(@PathVariable long dni) {
-        boolean eliminado = clienteService.eliminarCliente(dni);
-        if (eliminado) {
+        if (clienteService.eliminarCliente(dni)) {
             System.out.println("Cliente eliminado con exito.");
             return ResponseEntity.ok("Cliente eliminado con exito.");
         } else {
