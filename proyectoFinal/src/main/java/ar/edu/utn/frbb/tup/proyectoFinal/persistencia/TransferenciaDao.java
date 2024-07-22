@@ -3,7 +3,9 @@ package ar.edu.utn.frbb.tup.proyectoFinal.persistencia;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.TransferenciaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Transferencia;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity.TransferenciaEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TransferenciaDao extends AbstractBaseDao {
 
     public void realizar(Transferencia transferencia) {

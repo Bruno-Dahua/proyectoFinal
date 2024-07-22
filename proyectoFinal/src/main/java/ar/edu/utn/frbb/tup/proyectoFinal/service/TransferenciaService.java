@@ -1,19 +1,19 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.service;
 
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.RespuestaTransferenciaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.TransferenciaDto;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Transferencia;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.TransferenciaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-@Component
+@Service
 public class TransferenciaService {
     @Autowired
     private ClienteDao clienteDao;
@@ -22,35 +22,88 @@ public class TransferenciaService {
     private TransferenciaDao transferenciaDao;
 
 
-    public void realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException {
+    public RespuestaTransferenciaDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException {
         Cliente clienteOrigen = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaDestino()), false);
+        Set<Cuenta> cuentasOrigen = clienteOrigen.getCuentas();
+        Cuenta cuentaOrigen = null;
 
         Cliente clienteDestino = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaOrigen()), false);
         Set<Cuenta> cuentasDestino = clienteDestino.getCuentas();
-
+        Cuenta cuentaDestino = null;
 
         if (clienteOrigen == null) {
             throw new ClienteDoesntExistException("El cliente con DNI " + transferenciaDto.getCuentaOrigen() + " no existe.");
         } else if (clienteDestino == null) {
             throw new ClienteDoesntExistException("El cliente con DNI " + transferenciaDto.getCuentaDestino() + "no existe.");
-        }
-        else if (cuentasDestino == null) {
+        } else if (cuentasDestino == null) {
             throw new NotPosibleException("El cliente con DNI " + transferenciaDto.getCuentaDestino() + " no tiene cuentas.");
         }
+
         Transferencia transferencia = toTransferencia(transferenciaDto);
-        if (transferenciaDto.getMoneda().equals("PESOS")){
-            for (Cuenta c : cuentasDestino){
-                if (c.getTipoCuenta().equals("CUENTA_CORRIENTE")) {
-                    transferenciaDao.realizar(transferencia);
+        RespuestaTransferenciaDto respuestaTransferenciaDto = new RespuestaTransferenciaDto();
+
+        if (transferenciaDto.getMoneda() == TipoMoneda.PESOS) {
+
+            for (Cuenta c : cuentasOrigen){
+                if (c.getTipoCuenta() == TipoCuenta.CUENTA_CORRIENTE && c.getMoneda() == TipoMoneda.PESOS) {
+                    cuentaOrigen = c;
                 }
             }
-        }
 
-        if (clienteOrigen.get() < transferenciaDto.getMonto()) {
-            clienteDestino.setSaldo(clienteDestino.getSaldo() + transferenciaDto.getMonto());
-            clienteOrigen.setSaldo(clienteOrigen.getSaldo() - transferenciaDto.getMonto());
-            clienteDao.save(clienteDestino);
-            clienteDao.save(clienteOrigen);
+            for (Cuenta c : cuentasDestino) {
+                if (c.getTipoCuenta() == TipoCuenta.CUENTA_CORRIENTE && c.getMoneda() == TipoMoneda.PESOS) {
+                    cuentaDestino = c;
+                }
+            }
+
+            if (cuentaOrigen != null && cuentaDestino != null && cuentaOrigen.getBalance() >= transferencia.getMonto()) {
+                if (transferenciaDto.getMonto() > 1000000) {
+                    cuentaOrigen.setBalance(cuentaOrigen.getBalance() - transferencia.getMonto() - (0.02 * transferencia.getMonto()));
+                    cuentaDestino.setBalance(cuentaDestino.getBalance() + transferencia.getMonto());
+                } else {
+                    cuentaOrigen.setBalance(cuentaOrigen.getBalance() - transferencia.getMonto());
+                    cuentaDestino.setBalance(cuentaDestino.getBalance() + transferencia.getMonto());
+                }
+                transferenciaDao.realizar(transferencia);
+                respuestaTransferenciaDto.setEstado("EXITOSA");
+                respuestaTransferenciaDto.setMensaje("Se realizo la transferencia exitosamente. Numero de transferencia: " + transferencia.getNumeroTransaccion() + ". Ralizado el " + transferencia.getFecha());
+                return respuestaTransferenciaDto;
+            }else {
+                respuestaTransferenciaDto.setEstado("FALLIDA");
+                respuestaTransferenciaDto.setMensaje("No fue posible realizar la transferencia.");
+                return respuestaTransferenciaDto;
+            }
+        }
+        else {
+            for (Cuenta c : cuentasOrigen) {
+                if (c.getTipoCuenta() == TipoCuenta.CAJA_AHORRO && c.getMoneda() == TipoMoneda.DOLARES) {
+                    cuentaOrigen = c;
+                }
+            }
+
+            for (Cuenta c : cuentasDestino) {
+                if (c.getTipoCuenta() == TipoCuenta.CAJA_AHORRO && c.getMoneda() == TipoMoneda.DOLARES) {
+                    cuentaDestino = c;
+                }
+            }
+
+            if (cuentaOrigen != null && cuentaDestino != null && cuentaOrigen.getBalance() >= transferencia.getMonto()) {
+                if (transferenciaDto.getMonto() > 5000) {
+                    cuentaOrigen.setBalance(cuentaOrigen.getBalance() - transferencia.getMonto() - (0.005 * transferencia.getMonto()));
+                    cuentaDestino.setBalance(cuentaDestino.getBalance() + transferencia.getMonto());
+                } else {
+                    cuentaOrigen.setBalance(cuentaOrigen.getBalance() - transferencia.getMonto());
+                    cuentaDestino.setBalance(cuentaDestino.getBalance() + transferencia.getMonto());
+                }
+                transferenciaDao.realizar(transferencia);
+                respuestaTransferenciaDto.setEstado("EXITOSA");
+                respuestaTransferenciaDto.setMensaje("Se realizo la transferencia exitosamente. Numero de transferencia: " + transferencia.getNumeroTransaccion() + ". Ralizado el " + transferencia.getFecha());
+                return respuestaTransferenciaDto;
+            }else {
+                respuestaTransferenciaDto.setEstado("FALLIDO");
+                respuestaTransferenciaDto.setMensaje("No fue posible realizar la transferencia.");
+                return respuestaTransferenciaDto;
+            }
         }
     }
 

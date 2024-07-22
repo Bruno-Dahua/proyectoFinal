@@ -10,7 +10,7 @@ import java.util.Random;
 public class Cuenta {
     private long numeroCuenta;
     LocalDateTime fechaCreacion;
-    int balance;
+    double balance;
     TipoCuenta tipoCuenta;
     TipoMoneda moneda;
 
@@ -21,7 +21,7 @@ public class Cuenta {
     public Cuenta() {
         this.numeroCuenta = new Random().nextLong();
         this.fechaCreacion = LocalDateTime.now();
-        this.balance = 0;
+        this.balance = 1020000;
     }
 
     public Cliente getTitular() {
@@ -61,11 +61,11 @@ public class Cuenta {
         return this;
     }
 
-    public int getBalance() {
+    public double getBalance() {
         return balance;
     }
 
-    public Cuenta setBalance(int balance) {
+    public Cuenta setBalance(double balance) {
         this.balance = balance;
         return this;
     }

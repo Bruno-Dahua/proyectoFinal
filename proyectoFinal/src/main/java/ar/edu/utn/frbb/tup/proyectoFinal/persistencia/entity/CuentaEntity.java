@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 public class CuentaEntity extends BaseEntity {
     LocalDateTime fechaCreacion;
-    int balance;
+    double balance;
     String tipoCuenta;
     Cliente titular;
     long numeroCuenta;
