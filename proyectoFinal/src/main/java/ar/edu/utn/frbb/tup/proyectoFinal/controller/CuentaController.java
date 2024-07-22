@@ -46,15 +46,4 @@ public class CuentaController {
         Set<Cuenta> cuentas = clienteService.getCuentasPorDni(dni);
         return ResponseEntity.ok(cuentas);
     }
-
-    @DeleteMapping("/{dni}/{numeroCuenta}")
-    public ResponseEntity<String> eliminarCuenta(@PathVariable long dni, @PathVariable long numeroCuenta,  WebRequest request) {
-        if (cuentaService.darDeBajaCuenta(dni, numeroCuenta)) {
-            System.out.println("Cuenta eliminada con exito.");
-            return ResponseEntity.ok("Cuenta eliminada con exito.");
-        }else {
-            System.out.println("No fue posible eliminar la cuenta.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No fue posible eliminar la cuenta.");
-        }
-    }
 }

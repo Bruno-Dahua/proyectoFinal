@@ -70,14 +70,4 @@ public class CuentaService {
             clienteActualizado.addCuenta(c);
         }
     }
-
-
-    public boolean darDeBajaCuenta(long dniCliente, long numeroCuenta) {
-        Cliente cliente = clienteDao.find(dniCliente, false);
-        if (cliente != null){
-            return cuentaDao.eliminarCuentaByDniAndNumeroCuenta(dniCliente, numeroCuenta);
-        }else{
-            throw new IllegalArgumentException("No existe el cliente");
-        }
-    }
 }
