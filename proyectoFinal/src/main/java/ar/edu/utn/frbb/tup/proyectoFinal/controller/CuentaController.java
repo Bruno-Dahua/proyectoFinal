@@ -2,7 +2,9 @@ package ar.edu.utn.frbb.tup.proyectoFinal.controller;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.validator.CuentaValidator;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaAlreadyExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.TipoCuentaAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.ClienteService;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.CuentaService;
@@ -30,7 +32,7 @@ public class CuentaController {
     //Endpoint para crear una cuenta. Con condiciones, debe existir el cliente, los datos del titular deben ser los mismos
     //y ademas el cliente no puede tener una cuenta del mismo tipo y moneda.
     @PostMapping
-    public ResponseEntity<String> crearCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request) throws TipoCuentaAlreadyExistException {
+    public ResponseEntity<String> crearCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException {
         cuentaValidator.validate(cuentaDto);
         if (cuentaService.darDeAltaCuenta(cuentaDto)){
             System.out.println("Cuenta creada con exito.");
@@ -42,7 +44,7 @@ public class CuentaController {
     }
 
     @GetMapping("/{dni}")
-    public ResponseEntity<Set<Cuenta>> mostrarCuentas(@PathVariable long dni, WebRequest request){
+    public ResponseEntity<Set<Cuenta>> mostrarCuentas(@PathVariable long dni, WebRequest request) throws ClienteDoesntExistException, NotPosibleException {
         Set<Cuenta> cuentas = clienteService.getCuentasPorDni(dni);
         return ResponseEntity.ok(cuentas);
     }

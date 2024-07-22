@@ -4,15 +4,13 @@ import ar.edu.utn.frbb.tup.proyectoFinal.controller.ClienteDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteAlreadyExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.TipoCuentaAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -46,7 +44,7 @@ public class ClienteService {
         }
     }
 
-    public void agregarCuenta(Cuenta cuenta, long dniTitular) throws TipoCuentaAlreadyExistException {
+    public void agregarCuenta(Cuenta cuenta, long dniTitular) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException {
         Cliente titular = buscarClientePorDni(dniTitular);
         cuenta.setTitular(titular);
 
@@ -55,26 +53,26 @@ public class ClienteService {
         clienteDao.save(titular);
     }
 
-    public Cliente buscarClientePorDni(long dni) {
+    public Cliente buscarClientePorDni(long dni) throws ClienteDoesntExistException {
 
         Cliente cliente = clienteDao.find(dni, false);
 
         if (cliente == null) {
-            throw new IllegalArgumentException("El cliente no existe");
+            throw new ClienteDoesntExistException("El cliente no existe");
         }
 
         return cliente;
     }
 
-    public void actualizarCliente(long dniAntiguo, ClienteDto clienteDto) {
+    public void actualizarCliente(long dniAntiguo, ClienteDto clienteDto) throws ClienteDoesntExistException, NotPosibleException {
 
         Cliente clienteExistente = clienteDao.find(dniAntiguo, false);
 
         if (clienteExistente == null){
-            throw new IllegalArgumentException("Cliente no encontrado");
+            throw new ClienteDoesntExistException("El cliente no existe");
         }
         else if (clienteExistente.getEdad() < 18) {
-            throw new IllegalArgumentException("No fue posible actualizar el cliente");
+            throw new NotPosibleException("No fue posible actualizar el cliente");
         }
 
         Cliente clienteActualizado = toCliente(clienteDto);
@@ -87,24 +85,24 @@ public class ClienteService {
         clienteDao.delete(dniAntiguo);
     }
 
-    public boolean eliminarCliente(long dni) {
+    public boolean eliminarCliente(long dni) throws ClienteDoesntExistException {
         Cliente clienteEliminar = clienteDao.find(dni, false);
         if (clienteEliminar == null) {
-            throw new IllegalArgumentException("El cliente no existe");
+            throw new ClienteDoesntExistException("El cliente no existe");
         }else {
             return clienteDao.delete(dni);
         }
     }
 
-    public Set<Cuenta> getCuentasPorDni(long dni) {
+    public Set<Cuenta> getCuentasPorDni(long dni) throws ClienteDoesntExistException, NotPosibleException {
         Cliente cliente = clienteDao.find(dni, true);
 
         if (cliente != null) {
             return cliente.getCuentas();
-        } else if (cliente != null && cliente.getCuentas() == null) {
-            throw new IllegalArgumentException("El cliente no tiene cuentas");
+        } else if (cliente.getCuentas() == null) {
+            throw new NotPosibleException("El cliente no tiene cuentas");
         }else{
-            throw new IllegalArgumentException("El cliente no existe");
+            throw new ClienteDoesntExistException("El cliente no existe");
         }
     }
 

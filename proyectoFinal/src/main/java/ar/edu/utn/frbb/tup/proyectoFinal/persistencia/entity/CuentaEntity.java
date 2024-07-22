@@ -10,21 +10,18 @@ import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import java.time.LocalDateTime;
 
 public class CuentaEntity extends BaseEntity {
-    String nombre;
     LocalDateTime fechaCreacion;
     int balance;
     String tipoCuenta;
-    Long titular;
+    Cliente titular;
     long numeroCuenta;
     String moneda;
-
-    private ClienteDao clienteDao;
 
     public CuentaEntity(Cuenta cuenta) {
         super(cuenta.getNumeroCuenta());
         this.balance = cuenta.getBalance();
         this.tipoCuenta = cuenta.getTipoCuenta().toString();
-        this.titular = cuenta.getTitular().getDni();
+        this.titular = cuenta.getTitular();
         this.fechaCreacion = cuenta.getFechaCreacion();
         this.moneda = cuenta.getMoneda().toString();
         this.numeroCuenta = cuenta.getNumeroCuenta();
@@ -40,51 +37,7 @@ public class CuentaEntity extends BaseEntity {
         return cuenta;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
-    public int getBalance() {
-        return balance;
-    }
-
-    public void setBalance(int balance) {
-        this.balance = balance;
-    }
-
-    public String getTipoCuenta() {
-        return tipoCuenta;
-    }
-
-    public void setTipoCuenta(String tipoCuenta) {
-        this.tipoCuenta = tipoCuenta;
-    }
-
-    public Long getTitular() {
+    public Cliente getTitular() {
         return titular;
-    }
-
-    public void setTitular(Long titular) {
-        this.titular = titular;
-    }
-
-    public long getNumeroCuenta() {
-        return numeroCuenta;
-    }
-
-    public void setNumeroCuenta(long numeroCuenta) {
-        this.numeroCuenta = numeroCuenta;
     }
 }

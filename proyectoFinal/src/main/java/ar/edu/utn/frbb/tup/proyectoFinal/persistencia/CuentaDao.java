@@ -35,7 +35,7 @@ public class CuentaDao  extends AbstractBaseDao{
 
             CuentaEntity cuentaEntity = (CuentaEntity) object;
 
-            if(cuentaEntity.getTitular() == dni){
+            if(cuentaEntity.getTitular().getDni() == dni){
                 cuentasCliente.add(cuentaEntity.toCuenta());
             }
         }

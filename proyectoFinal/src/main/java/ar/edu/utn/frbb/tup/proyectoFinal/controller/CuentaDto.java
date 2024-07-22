@@ -13,13 +13,8 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CuentaDto {
 
-    //@JsonProperty("tipoCuenta")
     private TipoCuenta tipoCuenta;
-
-    //@JsonProperty("titular")
     private long titular;
-
-    //@JsonProperty("moneda")
     private TipoMoneda moneda;
 
     public TipoCuenta getTipoCuenta() {

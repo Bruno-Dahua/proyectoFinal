@@ -5,7 +5,9 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoCuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaAlreadyExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.TipoCuentaAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
@@ -28,7 +30,7 @@ public class CuentaService {
     //    2 - cuenta no soportada
     //    3 - cliente ya tiene cuenta de ese tipo
     //    4 - cuenta creada exitosamente
-    public boolean darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException {
+    public boolean darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException {
         // Crear una nueva cuenta y asignar valores desde cuentaDto
         Cuenta cuenta = new Cuenta();
         cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
@@ -45,11 +47,11 @@ public class CuentaService {
         }
 
         if (titular.tieneCuenta(cuenta.getTipoCuenta(), cuenta.getMoneda())) {
-            throw new TipoCuentaAlreadyExistException("El cliente ya posee una cuenta de ese tipo y moneda");
+            throw new NotPosibleException("El cliente ya posee una cuenta de ese tipo y moneda");
         }
 
         if (cuentaDto.getTipoCuenta() == TipoCuenta.CUENTA_CORRIENTE && cuentaDto.getMoneda() == TipoMoneda.DOLARES) {
-            throw new IllegalArgumentException("No es posible crear una CUENTA CORRIENTE en DOLARES");
+            throw new NotPosibleException("No es posible crear una CUENTA CORRIENTE en DOLARES");
         }
 
         // Agregar la cuenta al cliente
