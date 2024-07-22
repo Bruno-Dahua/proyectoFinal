@@ -1,5 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -9,11 +10,11 @@ public class Transferencia {
     private String cuentaDestino;
     private double monto;
     private String moneda;
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 
     public Transferencia() {
         this.numeroTransaccion = new Random().nextLong(9999) + 1000;
-        this.fecha = LocalDateTime.now();
+        this.fecha = LocalDate.now();
     }
 
     public long getNumeroTransaccion() {
@@ -56,11 +57,11 @@ public class Transferencia {
         this.moneda = moneda;
     }
 
-    public LocalDateTime getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDateTime fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 }

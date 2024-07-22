@@ -21,7 +21,7 @@ public class Cuenta {
     public Cuenta() {
         this.numeroCuenta = new Random().nextLong();
         this.fechaCreacion = LocalDateTime.now();
-        this.balance = 1020000;
+        this.balance = 1000000;
     }
 
     public Cliente getTitular() {
