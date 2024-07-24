@@ -44,7 +44,8 @@ public class CuentaController {
     }
 
     @GetMapping("/{dni}")
-    public ResponseEntity<Set<Cuenta>> mostrarCuentas(@PathVariable long dni, WebRequest request) throws ClienteDoesntExistException, NotPosibleException {
+    public ResponseEntity<Set<Cuenta>> mostrarCuentas(@PathVariable long dni, WebRequest request)
+            throws ClienteDoesntExistException, NotPosibleException {
         Set<Cuenta> cuentas = clienteService.getCuentasPorDni(dni);
         return ResponseEntity.ok(cuentas);
     }

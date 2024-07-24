@@ -37,7 +37,7 @@ public class CuentaService {
         cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
         cuenta.setMoneda(cuentaDto.getMoneda());
 
-        long dniTitular = cuentaDto.getTitular();
+        long dniTitular = Long.parseLong(cuentaDto.getTitular());
         // Obtener el titular desde el clienteDao
         Cliente titular = clienteService.buscarClientePorDni(dniTitular);
         cuenta.setTitular(titular);

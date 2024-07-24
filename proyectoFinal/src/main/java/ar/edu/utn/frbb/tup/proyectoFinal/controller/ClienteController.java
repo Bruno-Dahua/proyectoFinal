@@ -26,7 +26,7 @@ public class ClienteController {
 
     //Endpoint para crear un cliente, ingresando Json con los campos necesarios (dni, nombre, apellido, fechaNacimiento, tipoPersona y banco)
     @PostMapping
-    public ResponseEntity<String> crearCliente(@RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException {
+    public ResponseEntity<String> crearCliente(@RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException {
         clienteValidator.validate(clienteDto);
         if (clienteService.darDeAltaCliente(clienteDto)) {
             System.out.println("Cliente creado con exito.");

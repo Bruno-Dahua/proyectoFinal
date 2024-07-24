@@ -27,8 +27,8 @@ public class TransferenciaService {
 
     public RespuestaTransferenciaDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException {
         // Buscar clientes y sus cuentas
-        Cliente clienteOrigen = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaOrigen()), false);
-        Cliente clienteDestino = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaDestino()), false);
+        Cliente clienteOrigen = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaOrigen()));
+        Cliente clienteDestino = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaDestino()));
 
         if (clienteOrigen == null) {
             throw new ClienteDoesntExistException("El cliente con DNI " + transferenciaDto.getCuentaOrigen() + " no existe.");
@@ -69,12 +69,9 @@ public class TransferenciaService {
             cuentaOrigen.setBalance(cuentaOrigen.getBalance() - monto - comision);
             cuentaDestino.setBalance(cuentaDestino.getBalance() + monto);
 
-            // Realizo la transferencia
-            transferenciaDao.realizar(transferencia);
-
             // Creo y agrego las transacciones al historial
-            agregarTransaccionAlHistorial(cuentaOrigen, transferencia, TipoMovimiento.TRANSFERENCIA_SALIDA, "Transferencia a cuenta " + cuentaDestino.getNumeroCuenta());
-            agregarTransaccionAlHistorial(cuentaDestino, transferencia, TipoMovimiento.TRANSFERENCIA_ENTRADA, "Transferencia desde cuenta " + cuentaOrigen.getNumeroCuenta());
+            transferenciaDao.save(cuentaOrigen, transferencia, TipoMovimiento.TRANSFERENCIA_SALIDA, "Transferencia a cuenta " + cuentaDestino.getNumeroCuenta());
+            transferenciaDao.save(cuentaDestino, transferencia, TipoMovimiento.TRANSFERENCIA_ENTRADA, "Transferencia desde cuenta " + cuentaOrigen.getNumeroCuenta());
 
             // Actualizo las cuentas en la base de datos
             cuentaDao.update(cuentaOrigen);
@@ -98,16 +95,6 @@ public class TransferenciaService {
             return 0.005 * transferenciaDto.getMonto();
         }
         return 0;
-    }
-
-    private void agregarTransaccionAlHistorial(Cuenta cuenta, Transferencia transferencia, TipoMovimiento tipo, String descripcion) {
-        Transaccion transaccion = new Transaccion();
-        transaccion.setNumeroMovimiento(transferencia.getNumeroTransaccion());
-        transaccion.setFecha(transferencia.getFecha());
-        transaccion.setMonto(tipo == TipoMovimiento.TRANSFERENCIA_SALIDA ? -transferencia.getMonto() : transferencia.getMonto());
-        transaccion.setTipo(tipo);
-        transaccion.setDescripcion(descripcion);
-        cuenta.addToHistorial(transaccion);
     }
 
 

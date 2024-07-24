@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class CuentaDto {
 
     private TipoCuenta tipoCuenta;
-    private long titular;
+    private String titular;
     private TipoMoneda moneda;
 
     public TipoCuenta getTipoCuenta() {
@@ -25,11 +25,11 @@ public class CuentaDto {
         this.tipoCuenta = tipoCuenta;
     }
 
-    public long getTitular() {
+    public String getTitular() {
         return titular;
     }
 
-    public void setTitular(long titular) {
+    public void setTitular(String titular) {
         this.titular = titular;
     }
 

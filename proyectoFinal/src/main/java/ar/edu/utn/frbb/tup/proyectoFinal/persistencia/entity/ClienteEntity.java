@@ -11,6 +11,7 @@ import java.util.List;
 
 public class ClienteEntity extends BaseEntity {
 
+    private final String dni;
     private final String tipoPersona;
     private final String nombre;
     private final String apellido;
@@ -21,6 +22,7 @@ public class ClienteEntity extends BaseEntity {
 
     public ClienteEntity(Cliente cliente) {
         super(cliente.getDni());
+        this.dni = cliente.getDniString();
         this.tipoPersona = cliente.getTipoPersona() != null ? cliente.getTipoPersona().getDescripcion() : null;
         this.nombre = cliente.getNombre();
         this.apellido = cliente.getApellido();
@@ -48,5 +50,9 @@ public class ClienteEntity extends BaseEntity {
         cliente.setCuentas(new HashSet<>(cuentas));
 
         return cliente;
+    }
+
+    public String getDni() {
+        return dni;
     }
 }
