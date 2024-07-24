@@ -4,24 +4,40 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 @JsonIgnoreProperties({"titular"})
 public class Cuenta {
     private long numeroCuenta;
-    LocalDateTime fechaCreacion;
-    double balance;
-    TipoCuenta tipoCuenta;
-    TipoMoneda moneda;
+    private LocalDateTime fechaCreacion;
+    private double balance;
+    private TipoCuenta tipoCuenta;
+    private TipoMoneda moneda;
 
     @JsonBackReference
-    Cliente titular;
+    private Cliente titular;
     
+    private Set<Transaccion> historialTransacciones;
 
     public Cuenta() {
         this.numeroCuenta = new Random().nextLong();
         this.fechaCreacion = LocalDateTime.now();
         this.balance = 1000000;
+        this.historialTransacciones = new HashSet<>();
+    }
+
+    public void addToHistorial(Transaccion transaccion) {
+        this.historialTransacciones.add(transaccion);
+    }
+
+    public Set<Transaccion> getHistorialTransacciones() {
+        return historialTransacciones;
+    }
+
+    public void setHistorialTransacciones(Set<Transaccion> historialTransacciones) {
+        this.historialTransacciones = historialTransacciones;
     }
 
     public Cliente getTitular() {

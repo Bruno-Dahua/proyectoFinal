@@ -6,6 +6,7 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
+import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.TransferenciaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,102 +21,95 @@ public class TransferenciaService {
 
     @Autowired
     private TransferenciaDao transferenciaDao;
+    @Autowired
+    private CuentaDao cuentaDao;
 
 
     public RespuestaTransferenciaDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException {
+        // Buscar clientes y sus cuentas
         Cliente clienteOrigen = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaOrigen()), false);
-        Set<Cuenta> cuentasOrigen = clienteOrigen != null ? clienteOrigen.getCuentas() : null;
-        Cuenta cuentaOrigen = null;
-
         Cliente clienteDestino = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaDestino()), false);
-        Set<Cuenta> cuentasDestino = clienteDestino != null ? clienteDestino.getCuentas() : null;
-        Cuenta cuentaDestino = null;
 
         if (clienteOrigen == null) {
             throw new ClienteDoesntExistException("El cliente con DNI " + transferenciaDto.getCuentaOrigen() + " no existe.");
         } else if (clienteDestino == null) {
             throw new ClienteDoesntExistException("El cliente con DNI " + transferenciaDto.getCuentaDestino() + " no existe.");
-        } else if (cuentasDestino == null || cuentasOrigen == null) {
-            throw new NotPosibleException("El cliente no tiene cuentas.");
+        }
+
+        Set<Cuenta> cuentasOrigen = clienteOrigen.getCuentas();
+        Set<Cuenta> cuentasDestino = clienteDestino.getCuentas();
+
+        Cuenta cuentaOrigen = null;
+        for (Cuenta cuenta : cuentasOrigen) {
+            if (cuenta.getTitular().getDni() == Long.parseLong(transferenciaDto.getCuentaOrigen())) {
+                cuentaOrigen = cuenta;
+            }
+        }
+
+        Cuenta cuentaDestino = null;
+        for (Cuenta cuenta : cuentasDestino) {
+            if (cuenta.getTitular().getDni() == Long.parseLong(transferenciaDto.getCuentaDestino())) {
+                cuentaDestino = cuenta;
+            }
         }
 
         Transferencia transferencia = toTransferencia(transferenciaDto);
         RespuestaTransferenciaDto respuestaTransferenciaDto = new RespuestaTransferenciaDto();
 
-        if (transferenciaDto.getMoneda() == TipoMoneda.PESOS) {
-            for (Cuenta c : cuentasOrigen) {
-                if (c.getTipoCuenta() == TipoCuenta.CUENTA_CORRIENTE && c.getMoneda() == TipoMoneda.PESOS) {
-                    cuentaOrigen = c;
-                    break;
-                }
-            }
-
-            for (Cuenta c : cuentasDestino) {
-                if (c.getTipoCuenta() == TipoCuenta.CUENTA_CORRIENTE && c.getMoneda() == TipoMoneda.PESOS) {
-                    cuentaDestino = c;
-                    break;
-                }
-            }
-
-            if (cuentaOrigen != null && cuentaDestino != null && cuentaOrigen.getBalance() >= transferencia.getMonto()) {
-                if (transferenciaDto.getMonto() >= 1000000) {
-                    cuentaOrigen.setBalance(cuentaOrigen.getBalance() - transferencia.getMonto() - (0.02 * transferencia.getMonto()));
-                    cuentaDestino.setBalance(cuentaDestino.getBalance() + transferencia.getMonto());
-                } else {
-                    cuentaOrigen.setBalance(cuentaOrigen.getBalance() - transferencia.getMonto());
-                    cuentaDestino.setBalance(cuentaDestino.getBalance() + transferencia.getMonto());
-                }
-                transferenciaDao.realizar(transferencia);
-                respuestaTransferenciaDto.setEstado("EXITOSA");
-                if (cuentaOrigen.getBalance() > 0) {
-                    respuestaTransferenciaDto.setMensaje("Se realizó la transferencia exitosamente. Número de transferencia: " + transferencia.getNumeroTransaccion() + ". Realizado el " + transferencia.getFecha() + ". Saldo actual: ARG $ " + cuentaOrigen.getBalance());
-                }else {
-                    respuestaTransferenciaDto.setMensaje("Se realizó la transferencia exitosamente. Número de transferencia: " + transferencia.getNumeroTransaccion() + ". Realizado el " + transferencia.getFecha() + ". Usted tiene una deuda con el Banco.");
-                }
-                return respuestaTransferenciaDto;
-            } else {
-                respuestaTransferenciaDto.setEstado("FALLIDA");
-                respuestaTransferenciaDto.setMensaje("No fue posible realizar la transferencia.");
-                return respuestaTransferenciaDto;
-            }
+        if (cuentaOrigen == null || cuentaDestino == null) {
+            respuestaTransferenciaDto.setEstado("FALLIDA");
+            respuestaTransferenciaDto.setMensaje("No se encontró una cuenta válida para la transferencia.");
+            return respuestaTransferenciaDto;
         }
 
-        else {
-            for (Cuenta c : cuentasOrigen) {
-                if (c.getTipoCuenta() == TipoCuenta.CAJA_AHORRO && c.getMoneda() == TipoMoneda.DOLARES) {
-                    cuentaOrigen = c;
-                }
-            }
+        if (cuentaOrigen.getBalance() >= transferencia.getMonto()) {
+            double monto = transferencia.getMonto();
+            double comision = calcularComision(transferenciaDto);
 
-            for (Cuenta c : cuentasDestino) {
-                if (c.getTipoCuenta() == TipoCuenta.CAJA_AHORRO && c.getMoneda() == TipoMoneda.DOLARES) {
-                    cuentaDestino = c;
-                }
-            }
+            cuentaOrigen.setBalance(cuentaOrigen.getBalance() - monto - comision);
+            cuentaDestino.setBalance(cuentaDestino.getBalance() + monto);
 
-            if (cuentaOrigen != null && cuentaDestino != null && cuentaOrigen.getBalance() >= transferencia.getMonto()) {
-                if (transferenciaDto.getMonto() >= 5000) {
-                    cuentaOrigen.setBalance(cuentaOrigen.getBalance() - transferencia.getMonto() - (0.005 * transferencia.getMonto()));
-                    cuentaDestino.setBalance(cuentaDestino.getBalance() + transferencia.getMonto());
-                } else {
-                    cuentaOrigen.setBalance(cuentaOrigen.getBalance() - transferencia.getMonto());
-                    cuentaDestino.setBalance(cuentaDestino.getBalance() + transferencia.getMonto());
-                }
-                transferenciaDao.realizar(transferencia);
-                respuestaTransferenciaDto.setEstado("EXITOSA");
-                if (cuentaOrigen.getBalance() > 0) {
-                    respuestaTransferenciaDto.setMensaje("Se realizo la transferencia exitosamente. Numero de transferencia: " + transferencia.getNumeroTransaccion() + ". Ralizado el " + transferencia.getFecha() + ". Saldo actual: USD $ " + cuentaOrigen.getBalance());
-                }else {
-                    respuestaTransferenciaDto.setMensaje("Se realizo la transferencia exitosamente. Numero de transferencia: " + transferencia.getNumeroTransaccion() + ". Ralizado el " + transferencia.getFecha() + ". Usted tiene una deuda con el Banco.");
-                }
-                return respuestaTransferenciaDto;
-            }else {
-                respuestaTransferenciaDto.setEstado("FALLIDO");
-                respuestaTransferenciaDto.setMensaje("No fue posible realizar la transferencia.");
-                return respuestaTransferenciaDto;
-            }
+            // Realizo la transferencia
+            transferenciaDao.realizar(transferencia);
+
+            // Creo y agrego las transacciones al historial
+            agregarTransaccionAlHistorial(cuentaOrigen, transferencia, TipoMovimiento.TRANSFERENCIA_SALIDA, "Transferencia a cuenta " + cuentaDestino.getNumeroCuenta());
+            agregarTransaccionAlHistorial(cuentaDestino, transferencia, TipoMovimiento.TRANSFERENCIA_ENTRADA, "Transferencia desde cuenta " + cuentaOrigen.getNumeroCuenta());
+
+            // Actualizo las cuentas en la base de datos
+            cuentaDao.update(cuentaOrigen);
+            cuentaDao.update(cuentaDestino);
+
+            // Preparo una respuestaDto
+            respuestaTransferenciaDto.setEstado("EXITOSA");
+            respuestaTransferenciaDto.setMensaje("Se realizó la transferencia exitosamente. Número de transferencia: " + transferencia.getNumeroTransaccion() + ". Realizado el " + transferencia.getFecha() + ". Saldo actual: " + (cuentaOrigen.getBalance() > 0 ? (transferenciaDto.getMoneda() == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuentaOrigen.getBalance() : "Usted tiene una deuda con el Banco."));
+            return respuestaTransferenciaDto;
+        } else {
+            respuestaTransferenciaDto.setEstado("FALLIDA");
+            respuestaTransferenciaDto.setMensaje("Saldo insuficiente para realizar la transferencia.");
+            return respuestaTransferenciaDto;
         }
     }
+
+    private double calcularComision(TransferenciaDto transferenciaDto) {
+        if (transferenciaDto.getMoneda() == TipoMoneda.PESOS && transferenciaDto.getMonto() >= 1000000) {
+            return 0.02 * transferenciaDto.getMonto();
+        } else if (transferenciaDto.getMoneda() == TipoMoneda.DOLARES && transferenciaDto.getMonto() >= 5000) {
+            return 0.005 * transferenciaDto.getMonto();
+        }
+        return 0;
+    }
+
+    private void agregarTransaccionAlHistorial(Cuenta cuenta, Transferencia transferencia, TipoMovimiento tipo, String descripcion) {
+        Transaccion transaccion = new Transaccion();
+        transaccion.setNumeroMovimiento(transferencia.getNumeroTransaccion());
+        transaccion.setFecha(transferencia.getFecha());
+        transaccion.setMonto(tipo == TipoMovimiento.TRANSFERENCIA_SALIDA ? -transferencia.getMonto() : transferencia.getMonto());
+        transaccion.setTipo(tipo);
+        transaccion.setDescripcion(descripcion);
+        cuenta.addToHistorial(transaccion);
+    }
+
 
     private Transferencia toTransferencia(TransferenciaDto transferenciaDto) {
         Transferencia transferencia = new Transferencia();

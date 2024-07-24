@@ -2,6 +2,7 @@ package ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Transferencia;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class TransferenciaEntity extends BaseEntity{
@@ -10,7 +11,7 @@ public class TransferenciaEntity extends BaseEntity{
     String cuentaDestino;
     double monto;
     String moneda;
-    LocalDateTime fecha;
+    LocalDate fecha;
 
     public TransferenciaEntity(Transferencia transferencia) {
         super(transferencia.getNumeroTransaccion());

@@ -1,21 +1,20 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.CuentaDto;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoCuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public class CuentaEntity extends BaseEntity {
-    LocalDateTime fechaCreacion;
-    double balance;
-    String tipoCuenta;
-    Cliente titular;
-    long numeroCuenta;
-    String moneda;
+    private LocalDateTime fechaCreacion;
+    private double balance;
+    private String tipoCuenta;
+    private Cliente titular;
+    private long numeroCuenta;
+    private String moneda;
+    private Set<Transaccion> historialTransacciones;
 
     public CuentaEntity(Cuenta cuenta) {
         super(cuenta.getNumeroCuenta());
@@ -25,6 +24,7 @@ public class CuentaEntity extends BaseEntity {
         this.fechaCreacion = cuenta.getFechaCreacion();
         this.moneda = cuenta.getMoneda().toString();
         this.numeroCuenta = cuenta.getNumeroCuenta();
+        this.historialTransacciones = cuenta.getHistorialTransacciones();
     }
 
     public Cuenta toCuenta() {
@@ -34,10 +34,15 @@ public class CuentaEntity extends BaseEntity {
         cuenta.setTipoCuenta(TipoCuenta.valueOf(this.tipoCuenta));
         cuenta.setFechaCreacion(this.fechaCreacion);
         cuenta.setMoneda(TipoMoneda.valueOf(this.moneda));
+        cuenta.setHistorialTransacciones(this.historialTransacciones);
         return cuenta;
     }
 
     public Cliente getTitular() {
         return titular;
+    }
+
+    public long getNumeroCuenta(){
+        return numeroCuenta;
     }
 }

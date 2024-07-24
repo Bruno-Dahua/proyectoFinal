@@ -32,8 +32,8 @@ public class ClienteController {
             System.out.println("Cliente creado con exito.");
             return ResponseEntity.ok("Cliente creado con exito.");
         } else {
-            System.out.println("No fue posible crear el cliente.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No fue posible crear el cliente.");
+            System.out.println("No fue posible crear el cliente con DNI " + clienteDto.getDni() + ".");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No fue posible crear el cliente con DNI " + clienteDto.getDni() + ".");
         }
     }
 

@@ -4,10 +4,7 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity.CuentaEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class CuentaDao  extends AbstractBaseDao{
@@ -46,5 +43,16 @@ public class CuentaDao  extends AbstractBaseDao{
     public void update(Cuenta cuenta){
         CuentaEntity cuentaEntity = new CuentaEntity(cuenta);
         getInMemoryDatabase().put(cuenta.getNumeroCuenta(), cuentaEntity);
+    }
+
+
+    public Cuenta findByNumeroCuenta(long numeroCuenta) {
+        for (Object object : getInMemoryDatabase().values()) {
+            CuentaEntity cuentaEntity = (CuentaEntity) object;
+            if (cuentaEntity.getNumeroCuenta() == numeroCuenta) {
+                return cuentaEntity.toCuenta();
+            }
+        }
+        return null;
     }
 }

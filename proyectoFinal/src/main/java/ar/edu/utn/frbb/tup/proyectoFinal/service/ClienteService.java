@@ -58,7 +58,7 @@ public class ClienteService {
         Cliente cliente = clienteDao.find(dni, false);
 
         if (cliente == null) {
-            throw new ClienteDoesntExistException("El cliente no existe");
+            throw new ClienteDoesntExistException("No existe el cliente con DNI " + dni);
         }
 
         return cliente;
@@ -69,10 +69,10 @@ public class ClienteService {
         Cliente clienteExistente = clienteDao.find(dniAntiguo, false);
 
         if (clienteExistente == null){
-            throw new ClienteDoesntExistException("El cliente no existe");
+            throw new ClienteDoesntExistException("No existe el cliente con DNI " + dniAntiguo);
         }
         else if (clienteExistente.getEdad() < 18) {
-            throw new NotPosibleException("No fue posible actualizar el cliente");
+            throw new NotPosibleException("No fue posible actualizar el cliente con DNI " + clienteDto.getDni() + ".");
         }
 
         Cliente clienteActualizado = toCliente(clienteDto);
@@ -88,7 +88,7 @@ public class ClienteService {
     public boolean eliminarCliente(long dni) throws ClienteDoesntExistException {
         Cliente clienteEliminar = clienteDao.find(dni, false);
         if (clienteEliminar == null) {
-            throw new ClienteDoesntExistException("El cliente no existe");
+            throw new ClienteDoesntExistException("No existe el cliente con DNI " + dni + ".");
         }else {
             return clienteDao.delete(dni);
         }
@@ -96,14 +96,15 @@ public class ClienteService {
 
     public Set<Cuenta> getCuentasPorDni(long dni) throws ClienteDoesntExistException, NotPosibleException {
         Cliente cliente = clienteDao.find(dni, true);
-
-        if (cliente != null) {
-            return cliente.getCuentas();
-        } else if (cliente.getCuentas() == null) {
-            throw new NotPosibleException("El cliente no tiene cuentas");
-        }else{
-            throw new ClienteDoesntExistException("El cliente no existe");
+        if (cliente == null) {
+            throw new ClienteDoesntExistException("No existe el cliente con DNI " + dni + ".");
         }
+        if (cliente.getCuentas() == null) {
+            throw new NotPosibleException("El cliente con DNI " + cliente.getDni() +" no tiene cuentas.");
+        }
+
+        return cliente.getCuentas();
+
     }
 
     private Cliente toCliente(ClienteDto clienteDto) {

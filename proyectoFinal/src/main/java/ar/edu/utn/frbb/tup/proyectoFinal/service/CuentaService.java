@@ -13,10 +13,11 @@ import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-@Component
+@Service
 public class CuentaService {
     CuentaDao cuentaDao = new CuentaDao();
     @Autowired
