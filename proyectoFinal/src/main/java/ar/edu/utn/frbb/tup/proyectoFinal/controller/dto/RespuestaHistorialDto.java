@@ -1,4 +1,4 @@
-package ar.edu.utn.frbb.tup.proyectoFinal.controller;
+package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Transaccion;
 

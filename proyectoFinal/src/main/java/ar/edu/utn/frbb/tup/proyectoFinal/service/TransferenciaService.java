@@ -1,7 +1,7 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.service;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.RespuestaTransferenciaDto;
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.TransferenciaDto;
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.RespuestaTransferenciaDto;
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.TransferenciaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
@@ -9,7 +9,6 @@ import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.TransferenciaDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -23,6 +22,8 @@ public class TransferenciaService {
     private TransferenciaDao transferenciaDao;
     @Autowired
     private CuentaDao cuentaDao;
+    @Autowired
+    private CuentaService cuentaService;
 
 
     public RespuestaTransferenciaDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException {
@@ -66,8 +67,7 @@ public class TransferenciaService {
             double monto = transferencia.getMonto();
             double comision = calcularComision(transferenciaDto);
 
-            cuentaOrigen.setBalance(cuentaOrigen.getBalance() - monto - comision);
-            cuentaDestino.setBalance(cuentaDestino.getBalance() + monto);
+            cuentaService.actualizarBalance(cuentaOrigen, cuentaDestino, monto, comision);
 
             // Creo y agrego las transacciones al historial
             transferenciaDao.save(cuentaOrigen, transferencia, TipoMovimiento.TRANSFERENCIA_SALIDA, "Transferencia a cuenta " + cuentaDestino.getNumeroCuenta());
@@ -89,10 +89,10 @@ public class TransferenciaService {
     }
 
     private double calcularComision(TransferenciaDto transferenciaDto) {
-        if (transferenciaDto.getMoneda() == TipoMoneda.PESOS && transferenciaDto.getMonto() >= 1000000) {
-            return 0.02 * transferenciaDto.getMonto();
-        } else if (transferenciaDto.getMoneda() == TipoMoneda.DOLARES && transferenciaDto.getMonto() >= 5000) {
-            return 0.005 * transferenciaDto.getMonto();
+        if (transferenciaDto.getMoneda() == TipoMoneda.PESOS && Double.parseDouble(transferenciaDto.getMonto()) >= 1000000) {
+            return 0.02 * Double.parseDouble(transferenciaDto.getMonto());
+        } else if (transferenciaDto.getMoneda() == TipoMoneda.DOLARES && Double.parseDouble(transferenciaDto.getMonto()) >= 5000) {
+            return 0.005 * Double.parseDouble(transferenciaDto.getMonto());
         }
         return 0;
     }
@@ -100,7 +100,7 @@ public class TransferenciaService {
 
     private Transferencia toTransferencia(TransferenciaDto transferenciaDto) {
         Transferencia transferencia = new Transferencia();
-        transferencia.setMonto(transferenciaDto.getMonto());
+        transferencia.setMonto(Double.parseDouble(transferenciaDto.getMonto()));
         transferencia.setCuentaOrigen(transferenciaDto.getCuentaOrigen());
         transferencia.setCuentaDestino(transferenciaDto.getCuentaDestino());
         transferencia.setMoneda(transferenciaDto.getMoneda().toString());

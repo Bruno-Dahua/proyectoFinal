@@ -1,8 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.CuentaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
-import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 
 import java.time.LocalDateTime;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package ar.edu.utn.frbb.tup.proyectoFinal.controller;
+package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 
 public class ClienteDto extends PersonaDto{
     private String tipoPersona;

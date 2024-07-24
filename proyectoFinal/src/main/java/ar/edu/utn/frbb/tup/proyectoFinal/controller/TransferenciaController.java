@@ -1,14 +1,13 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.controller;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.validator.ClienteValidator;
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.RespuestaTransferenciaDto;
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.TransferenciaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.validator.TransferenciaValidator;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Transferencia;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
-import ar.edu.utn.frbb.tup.proyectoFinal.service.ClienteService;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.TransferenciaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,9 +26,8 @@ public class TransferenciaController {
 
     //Endpoint para realizar una transferencia, ingresando Json con los campos necesarios (cuentaOrigen, cuentaDestino, monto y tipoMoneda)
     @PostMapping
-    public RespuestaTransferenciaDto realizarTransferencia(@RequestBody TransferenciaDto transferenciaDto) throws NotPosibleException, ClienteDoesntExistException {
+    public RespuestaTransferenciaDto realizarTransferencia(@RequestBody TransferenciaDto transferenciaDto) throws NotPosibleException, ClienteDoesntExistException, InputErrorException {
         transferenciaValidator.validate(transferenciaDto);
-        RespuestaTransferenciaDto respuestaTransferenciaDto = transferenciaService.realizarTransferencia(transferenciaDto);
-        return respuestaTransferenciaDto;
+        return transferenciaService.realizarTransferencia(transferenciaDto);
     }
 }

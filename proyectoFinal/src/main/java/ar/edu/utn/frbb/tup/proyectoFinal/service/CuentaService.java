@@ -1,6 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.service;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.CuentaDto;
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.CuentaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoCuenta;
@@ -12,7 +12,6 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.TipoCuentaAlreadyExist
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -31,7 +30,7 @@ public class CuentaService {
     //    2 - cuenta no soportada
     //    3 - cliente ya tiene cuenta de ese tipo
     //    4 - cuenta creada exitosamente
-    public boolean darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException {
+    public boolean darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, CuentaAlreadyExistException {
         // Crear una nueva cuenta y asignar valores desde cuentaDto
         Cuenta cuenta = new Cuenta();
         cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
@@ -48,7 +47,7 @@ public class CuentaService {
         }
 
         if (titular.tieneCuenta(cuenta.getTipoCuenta(), cuenta.getMoneda())) {
-            throw new NotPosibleException("El cliente ya posee una cuenta de ese tipo y moneda");
+            throw new CuentaAlreadyExistException("El cliente ya posee una cuenta de ese tipo y moneda");
         }
 
         if (cuentaDto.getTipoCuenta() == TipoCuenta.CUENTA_CORRIENTE && cuentaDto.getMoneda() == TipoMoneda.DOLARES) {
@@ -72,5 +71,10 @@ public class CuentaService {
             cuentaDao.update(c);
             clienteActualizado.addCuenta(c);
         }
+    }
+
+    public void actualizarBalance(Cuenta cuentaOrigen, Cuenta cuentaDestino, double monto, double comision){
+        cuentaOrigen.setBalance(cuentaOrigen.getBalance() - monto - comision);
+        cuentaDestino.setBalance(cuentaDestino.getBalance() + monto);
     }
 }

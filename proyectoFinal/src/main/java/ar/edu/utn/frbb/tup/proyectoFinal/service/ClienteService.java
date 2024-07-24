@@ -1,6 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.service;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.ClienteDto;
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.ClienteDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona;

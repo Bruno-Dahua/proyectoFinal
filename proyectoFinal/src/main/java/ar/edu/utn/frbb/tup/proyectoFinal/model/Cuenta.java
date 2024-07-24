@@ -1,6 +1,7 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDateTime;
@@ -18,7 +19,8 @@ public class Cuenta {
 
     @JsonBackReference
     private Cliente titular;
-    
+
+    @JsonIgnore
     private Set<Transaccion> historialTransacciones;
 
     public Cuenta() {

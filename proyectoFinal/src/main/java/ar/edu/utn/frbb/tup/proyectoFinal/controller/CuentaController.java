@@ -1,11 +1,9 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.controller;
 
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.CuentaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.validator.CuentaValidator;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaAlreadyExistException;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.TipoCuentaAlreadyExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.ClienteService;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.CuentaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -32,7 +29,7 @@ public class CuentaController {
     //Endpoint para crear una cuenta. Con condiciones, debe existir el cliente, los datos del titular deben ser los mismos
     //y ademas el cliente no puede tener una cuenta del mismo tipo y moneda.
     @PostMapping
-    public ResponseEntity<String> crearCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException {
+    public ResponseEntity<String> crearCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException, CuentaAlreadyExistException {
         cuentaValidator.validate(cuentaDto);
         if (cuentaService.darDeAltaCuenta(cuentaDto)){
             System.out.println("Cuenta creada con exito.");

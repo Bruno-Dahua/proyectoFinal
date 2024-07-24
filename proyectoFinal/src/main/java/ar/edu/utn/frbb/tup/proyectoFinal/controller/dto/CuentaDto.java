@@ -1,14 +1,8 @@
-package ar.edu.utn.frbb.tup.proyectoFinal.controller;
+package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoCuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.time.LocalDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CuentaDto {

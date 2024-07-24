@@ -1,11 +1,11 @@
-package ar.edu.utn.frbb.tup.proyectoFinal.controller;
+package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
 
 public class TransferenciaDto {
     private String cuentaOrigen;
     private String cuentaDestino;
-    private double monto;
+    private String monto;
     private TipoMoneda moneda;
 
     public String getCuentaOrigen() {
@@ -24,11 +24,11 @@ public class TransferenciaDto {
         this.cuentaDestino = cuentaDestino;
     }
 
-    public double getMonto() {
+    public String getMonto() {
         return monto;
     }
 
-    public void setMonto(double monto) {
+    public void setMonto(String monto) {
         this.monto = monto;
     }
 
@@ -39,4 +39,5 @@ public class TransferenciaDto {
     public void setMoneda(TipoMoneda moneda) {
         this.moneda = moneda;
     }
+
 }

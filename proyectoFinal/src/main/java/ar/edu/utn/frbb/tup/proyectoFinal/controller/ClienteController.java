@@ -1,9 +1,11 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.controller;
 
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.ClienteDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.validator.ClienteValidator;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class ClienteController {
 
     //Endpoint para crear un cliente, ingresando Json con los campos necesarios (dni, nombre, apellido, fechaNacimiento, tipoPersona y banco)
     @PostMapping
-    public ResponseEntity<String> crearCliente(@RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException {
+    public ResponseEntity<String> crearCliente(@RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException {
         clienteValidator.validate(clienteDto);
         if (clienteService.darDeAltaCliente(clienteDto)) {
             System.out.println("Cliente creado con exito.");
@@ -45,7 +47,7 @@ public class ClienteController {
 
     //Endpoint para actualizar un cliente, buscandolo por su dni. Se valida el ingreso de los datos necesarios
     @PutMapping("/{dni}")
-    public ResponseEntity<String> actualizarClientePorDni(@PathVariable long dni, @RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException {
+    public ResponseEntity<String> actualizarClientePorDni(@PathVariable long dni, @RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException {
         clienteValidator.validate(clienteDto);
         clienteService.actualizarCliente(dni, clienteDto);
         return ResponseEntity.ok("Cliente actualizado con exito.");

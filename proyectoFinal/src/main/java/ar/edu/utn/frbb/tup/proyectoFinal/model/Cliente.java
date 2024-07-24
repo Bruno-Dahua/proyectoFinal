@@ -1,7 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.ClienteDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.ClienteDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
