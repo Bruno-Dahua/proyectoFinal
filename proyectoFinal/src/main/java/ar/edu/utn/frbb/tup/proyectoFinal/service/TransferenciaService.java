@@ -40,19 +40,9 @@ public class TransferenciaService {
         Set<Cuenta> cuentasOrigen = clienteOrigen.getCuentas();
         Set<Cuenta> cuentasDestino = clienteDestino.getCuentas();
 
-        Cuenta cuentaOrigen = null;
-        for (Cuenta cuenta : cuentasOrigen) {
-            if (cuenta.getTitular().getDni() == Long.parseLong(transferenciaDto.getCuentaOrigen())) {
-                cuentaOrigen = cuenta;
-            }
-        }
+        Cuenta cuentaOrigen = cuentaDao.obtenerCuentaPrioritaria(cuentasOrigen, Long.parseLong(transferenciaDto.getCuentaOrigen()));
 
-        Cuenta cuentaDestino = null;
-        for (Cuenta cuenta : cuentasDestino) {
-            if (cuenta.getTitular().getDni() == Long.parseLong(transferenciaDto.getCuentaDestino())) {
-                cuentaDestino = cuenta;
-            }
-        }
+        Cuenta cuentaDestino = cuentaDao.obtenerCuentaPrioritaria(cuentasDestino, Long.parseLong(transferenciaDto.getCuentaDestino()));
 
         Transferencia transferencia = toTransferencia(transferenciaDto);
         RespuestaTransferenciaDto respuestaTransferenciaDto = new RespuestaTransferenciaDto();
@@ -106,4 +96,6 @@ public class TransferenciaService {
         transferencia.setMoneda(transferenciaDto.getMoneda().toString());
         return transferencia;
     }
+
+
 }
