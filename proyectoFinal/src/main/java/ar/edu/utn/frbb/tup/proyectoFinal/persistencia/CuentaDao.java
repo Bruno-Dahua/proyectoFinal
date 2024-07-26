@@ -73,4 +73,5 @@ public class CuentaDao  extends AbstractBaseDao{
 
         return cuentaCorriente != null ? cuentaCorriente : cajaAhorro;
     }
+
 }

@@ -27,6 +27,7 @@ public class Cuenta {
         this.numeroCuenta = new Random().nextLong();
         this.fechaCreacion = LocalDateTime.now();
         this.balance = 1000000;
+        this.tipoCuenta = tipoCuenta;
         this.historialTransacciones = new HashSet<>();
     }
 

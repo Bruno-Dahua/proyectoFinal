@@ -4,6 +4,7 @@ import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.RespuestaTransferenciaDt
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.TransferenciaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
@@ -20,13 +21,17 @@ public class TransferenciaService {
 
     @Autowired
     private TransferenciaDao transferenciaDao;
+
     @Autowired
     private CuentaDao cuentaDao;
+
     @Autowired
     private CuentaService cuentaService;
 
+    @Autowired
+    private BanelcoService banelcoService;
 
-    public RespuestaTransferenciaDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException {
+    public RespuestaTransferenciaDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException, CuentaDoesntExistException {
         // Buscar clientes y sus cuentas
         Cliente clienteOrigen = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaOrigen()));
         Cliente clienteDestino = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaDestino()));
@@ -41,20 +46,40 @@ public class TransferenciaService {
         Set<Cuenta> cuentasDestino = clienteDestino.getCuentas();
 
         Cuenta cuentaOrigen = cuentaDao.obtenerCuentaPrioritaria(cuentasOrigen, Long.parseLong(transferenciaDto.getCuentaOrigen()));
-
-        Cuenta cuentaDestino = cuentaDao.obtenerCuentaPrioritaria(cuentasDestino, Long.parseLong(transferenciaDto.getCuentaDestino()));
-
-        Transferencia transferencia = toTransferencia(transferenciaDto);
-        RespuestaTransferenciaDto respuestaTransferenciaDto = new RespuestaTransferenciaDto();
-
-        if (cuentaOrigen == null || cuentaDestino == null) {
-            respuestaTransferenciaDto.setEstado("FALLIDA");
-            respuestaTransferenciaDto.setMensaje("No se encontró una cuenta válida para la transferencia.");
-            return respuestaTransferenciaDto;
+        if (cuentaOrigen == null) {
+            throw new CuentaDoesntExistException("La cuenta de origen no existe");
         }
 
-        if (cuentaOrigen.getBalance() >= transferencia.getMonto()) {
-            double monto = transferencia.getMonto();
+        Cuenta cuentaDestino = cuentaDao.obtenerCuentaPrioritaria(cuentasDestino, Long.parseLong(transferenciaDto.getCuentaDestino()));
+        if (cuentaDestino == null) {
+            throw new CuentaDoesntExistException("La cuenta de destino no existe");
+        }
+
+        if (!cuentaOrigen.getMoneda().equals(cuentaDestino.getMoneda())) {
+            throw new NotPosibleException("Las monedas de las cuentas no coinciden");
+        }
+
+        RespuestaTransferenciaDto respuestaTransferenciaDto = new RespuestaTransferenciaDto();
+
+        if (clienteOrigen.getBanco().equals(clienteDestino.getBanco())) {
+            return generarRespuestaYActualizar(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
+        } else {
+            if (banelcoService.servicioDeBanelco(transferenciaDto)) {
+                return generarRespuestaYActualizar(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
+            } else {
+                respuestaTransferenciaDto.setEstado("FALLIDA");
+                respuestaTransferenciaDto.setMensaje("No es posible realizar la transferencia, los bancos son diferentes.");
+                return respuestaTransferenciaDto;
+            }
+        }
+    }
+
+
+    private RespuestaTransferenciaDto generarRespuestaYActualizar(TransferenciaDto transferenciaDto, Cuenta cuentaOrigen, Cuenta cuentaDestino, RespuestaTransferenciaDto respuestaTransferenciaDto) {
+        Transferencia transferencia = toTransferencia(transferenciaDto);
+
+        if (cuentaOrigen.getBalance() >= Double.parseDouble(transferenciaDto.getMonto())) {
+            double monto = Double.parseDouble(transferenciaDto.getMonto());
             double comision = calcularComision(transferenciaDto);
 
             cuentaService.actualizarBalance(cuentaOrigen, cuentaDestino, monto, comision);

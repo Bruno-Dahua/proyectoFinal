@@ -4,6 +4,7 @@ import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.RespuestaTransferenciaDt
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.TransferenciaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.validator.TransferenciaValidator;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.TransferenciaService;
@@ -26,7 +27,7 @@ public class TransferenciaController {
 
     //Endpoint para realizar una transferencia, ingresando Json con los campos necesarios (cuentaOrigen, cuentaDestino, monto y tipoMoneda)
     @PostMapping
-    public RespuestaTransferenciaDto realizarTransferencia(@RequestBody TransferenciaDto transferenciaDto) throws NotPosibleException, ClienteDoesntExistException, InputErrorException {
+    public RespuestaTransferenciaDto realizarTransferencia(@RequestBody TransferenciaDto transferenciaDto) throws NotPosibleException, ClienteDoesntExistException, InputErrorException, CuentaDoesntExistException {
         transferenciaValidator.validate(transferenciaDto);
         return transferenciaService.realizarTransferencia(transferenciaDto);
     }

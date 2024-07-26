@@ -35,7 +35,7 @@ public class ClienteService {
         }
 
         else if (cliente.getEdad() < 18) {
-            return false;
+            throw new NotPosibleException("El cliente con DNI " + cliente.getDni() + " no puede registrarse, no cumple con la edad mínima.");
         }
 
         else {
@@ -113,7 +113,7 @@ public class ClienteService {
         cliente.setApellido(clienteDto.getApellido());
         cliente.setFechaNacimiento(clienteDto.getFechaNacimiento());
         cliente.setBanco(clienteDto.getBanco());
-        cliente.setTipoPersona(TipoPersona.fromString(clienteDto.getTipoPersona()));
+        cliente.setTipoPersona(TipoPersona.valueOf(clienteDto.getTipoPersona()));
         cliente.setDni(clienteDto.getDni());
         return cliente;
     }

@@ -31,8 +31,8 @@ public class ClienteController {
     public ResponseEntity<String> crearCliente(@RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException {
         clienteValidator.validate(clienteDto);
         if (clienteService.darDeAltaCliente(clienteDto)) {
-            System.out.println("Cliente creado con exito.");
-            return ResponseEntity.ok("Cliente creado con exito.");
+            System.out.println("El cliente con DNI " + clienteDto.getDni() + " fue creado con exito.");
+            return ResponseEntity.ok("El cliente con DNI " + clienteDto.getDni() + " fue creado con exito.");
         } else {
             System.out.println("No fue posible crear el cliente con DNI " + clienteDto.getDni() + ".");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No fue posible crear el cliente con DNI " + clienteDto.getDni() + ".");
@@ -50,18 +50,18 @@ public class ClienteController {
     public ResponseEntity<String> actualizarClientePorDni(@PathVariable long dni, @RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException {
         clienteValidator.validate(clienteDto);
         clienteService.actualizarCliente(dni, clienteDto);
-        return ResponseEntity.ok("Cliente actualizado con exito.");
+        return ResponseEntity.ok("El cliente con DNI " + dni + " fue actualizado con exito.");
     }
 
     //Endpoint para eliminar un cliente, buscandolo por su DNI
     @DeleteMapping("/{dni}")
     public ResponseEntity<String> eliminarClientePorDni(@PathVariable long dni) throws ClienteDoesntExistException {
         if (clienteService.eliminarCliente(dni)) {
-            System.out.println("Cliente eliminado con exito.");
-            return ResponseEntity.ok("Cliente eliminado con exito.");
+            System.out.println("El cliente con DNI " + dni + " fue eliminado con exito.");
+            return ResponseEntity.ok("El cliente con DNI " + dni + " fue eliminado con exito.");
         } else {
-            System.out.println("No fue posible eliminar el cliente.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No fue posible eliminar el cliente.");
+            System.out.println("No fue posible eliminar el cliente con DNI " + dni + ".");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No fue posible eliminar el cliente con DNI " + dni + ".");
         }
     }
 
