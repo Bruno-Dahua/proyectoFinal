@@ -1,6 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 
-public class RespuestaTransferenciaDto {
+public class RespuestaTransaccionDto {
     private String estado;
     private String mensaje;
 

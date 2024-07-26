@@ -73,8 +73,12 @@ public class CuentaService {
         }
     }
 
-    public void actualizarBalance(Cuenta cuentaOrigen, Cuenta cuentaDestino, double monto, double comision){
+    public void actualizarBalanceTransferencia(Cuenta cuentaOrigen, Cuenta cuentaDestino, double monto, double comision){
         cuentaOrigen.setBalance(cuentaOrigen.getBalance() - monto - comision);
         cuentaDestino.setBalance(cuentaDestino.getBalance() + monto);
+    }
+
+    public void actualizarBalanceCuenta(Cuenta cuenta, double monto, double comision){
+        cuenta.setBalance(cuenta.getBalance() + monto - comision);
     }
 }

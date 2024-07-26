@@ -1,6 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.service;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.RespuestaTransferenciaDto;
+import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.RespuestaTransaccionDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.TransferenciaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
@@ -8,7 +8,6 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaDoesntExistExcep
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
-import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.TransferenciaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +19,6 @@ public class TransferenciaService {
     private ClienteDao clienteDao;
 
     @Autowired
-    private TransferenciaDao transferenciaDao;
-
-    @Autowired
     private CuentaDao cuentaDao;
 
     @Autowired
@@ -31,7 +27,7 @@ public class TransferenciaService {
     @Autowired
     private BanelcoService banelcoService;
 
-    public RespuestaTransferenciaDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException, CuentaDoesntExistException {
+    public RespuestaTransaccionDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException, CuentaDoesntExistException {
         // Buscar clientes y sus cuentas
         Cliente clienteOrigen = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaOrigen()));
         Cliente clienteDestino = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaDestino()));
@@ -47,19 +43,19 @@ public class TransferenciaService {
 
         Cuenta cuentaOrigen = cuentaDao.obtenerCuentaPrioritaria(cuentasOrigen, Long.parseLong(transferenciaDto.getCuentaOrigen()));
         if (cuentaOrigen == null) {
-            throw new CuentaDoesntExistException("La cuenta de origen no existe");
+            throw new CuentaDoesntExistException("La cuenta de origen no existe.");
         }
 
         Cuenta cuentaDestino = cuentaDao.obtenerCuentaPrioritaria(cuentasDestino, Long.parseLong(transferenciaDto.getCuentaDestino()));
         if (cuentaDestino == null) {
-            throw new CuentaDoesntExistException("La cuenta de destino no existe");
+            throw new CuentaDoesntExistException("La cuenta de destino no existe.");
         }
 
         if (!cuentaOrigen.getMoneda().equals(cuentaDestino.getMoneda())) {
-            throw new NotPosibleException("Las monedas de las cuentas no coinciden");
+            throw new NotPosibleException("Las monedas de las cuentas no coinciden.");
         }
 
-        RespuestaTransferenciaDto respuestaTransferenciaDto = new RespuestaTransferenciaDto();
+        RespuestaTransaccionDto respuestaTransferenciaDto = new RespuestaTransaccionDto();
 
         if (clienteOrigen.getBanco().equals(clienteDestino.getBanco())) {
             return generarRespuestaYActualizar(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
@@ -75,18 +71,18 @@ public class TransferenciaService {
     }
 
 
-    private RespuestaTransferenciaDto generarRespuestaYActualizar(TransferenciaDto transferenciaDto, Cuenta cuentaOrigen, Cuenta cuentaDestino, RespuestaTransferenciaDto respuestaTransferenciaDto) {
+    private RespuestaTransaccionDto generarRespuestaYActualizar(TransferenciaDto transferenciaDto, Cuenta cuentaOrigen, Cuenta cuentaDestino, RespuestaTransaccionDto respuestaTransferenciaDto) {
         Transferencia transferencia = toTransferencia(transferenciaDto);
 
         if (cuentaOrigen.getBalance() >= Double.parseDouble(transferenciaDto.getMonto())) {
             double monto = Double.parseDouble(transferenciaDto.getMonto());
             double comision = calcularComision(transferenciaDto);
 
-            cuentaService.actualizarBalance(cuentaOrigen, cuentaDestino, monto, comision);
+            cuentaService.actualizarBalanceTransferencia(cuentaOrigen, cuentaDestino, monto, comision);
 
             // Creo y agrego las transacciones al historial
-            transferenciaDao.save(cuentaOrigen, transferencia, TipoMovimiento.TRANSFERENCIA_SALIDA, "Transferencia a cuenta " + cuentaDestino.getNumeroCuenta());
-            transferenciaDao.save(cuentaDestino, transferencia, TipoMovimiento.TRANSFERENCIA_ENTRADA, "Transferencia desde cuenta " + cuentaOrigen.getNumeroCuenta());
+            save(cuentaOrigen, transferencia, TipoMovimiento.TRANSFERENCIA_SALIDA, "Transferencia a cuenta " + cuentaDestino.getNumeroCuenta());
+            save(cuentaDestino, transferencia, TipoMovimiento.TRANSFERENCIA_ENTRADA, "Transferencia desde cuenta " + cuentaOrigen.getNumeroCuenta());
 
             // Actualizo las cuentas en la base de datos
             cuentaDao.update(cuentaOrigen);
@@ -112,6 +108,15 @@ public class TransferenciaService {
         return 0;
     }
 
+    private void save(Cuenta cuenta, Transferencia transferencia, TipoMovimiento tipo, String descripcion) {
+        Transaccion transaccion = new Transaccion();
+        transaccion.setNumeroMovimiento(transferencia.getNumeroTransaccion());
+        transaccion.setFecha(transferencia.getFecha());
+        transaccion.setMonto(tipo == TipoMovimiento.TRANSFERENCIA_SALIDA ? -transferencia.getMonto() : +transferencia.getMonto());
+        transaccion.setTipo(tipo);
+        transaccion.setDescripcion(descripcion);
+        cuenta.addToHistorial(transaccion);
+    }
 
     private Transferencia toTransferencia(TransferenciaDto transferenciaDto) {
         Transferencia transferencia = new Transferencia();

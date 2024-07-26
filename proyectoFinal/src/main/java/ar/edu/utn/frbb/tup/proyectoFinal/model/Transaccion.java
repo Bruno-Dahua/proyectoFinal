@@ -61,6 +61,7 @@ public class Transaccion {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
 }
 
 
