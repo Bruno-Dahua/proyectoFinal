@@ -30,7 +30,7 @@ public class CuentaService {
     //    2 - cuenta no soportada
     //    3 - cliente ya tiene cuenta de ese tipo
     //    4 - cuenta creada exitosamente
-    public boolean darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, CuentaAlreadyExistException {
+    public Cuenta darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, CuentaAlreadyExistException {
         // Crear una nueva cuenta y asignar valores desde cuentaDto
         Cuenta cuenta = new Cuenta();
         cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
@@ -43,7 +43,7 @@ public class CuentaService {
 
         // Verificar si la cuenta ya existe
         if (cuentaDao.find(cuenta.getTitular().getDni()) != null) {
-            return false;
+            throw new NotPosibleException("El cliente ya posee una cuenta.");
         }
 
         if (titular.tieneCuenta(cuenta.getTipoCuenta(), cuenta.getMoneda())) {
@@ -60,7 +60,11 @@ public class CuentaService {
         // Guardar la cuenta en la base de datos
         cuentaDao.save(cuenta);
 
-        return true;
+        return cuenta;
+    }
+
+    public Cuenta buscarCuentaPorNumeroCuenta(long numeroCuenta) {
+        return cuentaDao.findByNumeroCuenta(numeroCuenta);
     }
 
     public void actualizarTitularCuenta(Cliente clienteActualizado, long dniAntiguo){
@@ -76,9 +80,58 @@ public class CuentaService {
     public void actualizarBalanceTransferencia(Cuenta cuentaOrigen, Cuenta cuentaDestino, double monto, double comision){
         cuentaOrigen.setBalance(cuentaOrigen.getBalance() - monto - comision);
         cuentaDestino.setBalance(cuentaDestino.getBalance() + monto);
+
+        cuentaDao.update(cuentaOrigen);
+        cuentaDao.update(cuentaDestino);
+
+        Cliente clienteOrigen = cuentaOrigen.getTitular();
+        Cliente clienteDestino = cuentaDestino.getTitular();
+
+        actualizarCuentaEnCliente(clienteOrigen, cuentaOrigen);
+        actualizarCuentaEnCliente(clienteDestino, cuentaDestino);
     }
 
-    public void actualizarBalanceCuenta(Cuenta cuenta, double monto, double comision){
-        cuenta.setBalance(cuenta.getBalance() + monto - comision);
+    public void actualizarBalanceDeposito(Cuenta cuenta, double monto, double comision){
+        double nuevoBalance = cuenta.getBalance() + monto - comision;
+        cuenta.setBalance(nuevoBalance);
+
+        cuentaDao.update(cuenta);
+
+        Cliente cliente = cuenta.getTitular();
+
+        actualizarCuentaEnCliente(cliente, cuenta);
+    }
+
+    public void actualizarBalanceRetiro(Cuenta cuenta, double monto, double comision) {
+        double nuevoBalance = cuenta.getBalance() - monto - comision;
+        cuenta.setBalance(nuevoBalance);
+
+        cuentaDao.update(cuenta);
+
+        Cliente cliente = cuenta.getTitular();
+
+        actualizarCuentaEnCliente(cliente, cuenta);
+    }
+
+    private void actualizarCuentaEnCliente(Cliente cliente, Cuenta cuentaActualizada) {
+        if (cliente != null) {
+            Set<Cuenta> cuentas = cliente.getCuentas();
+            Cuenta cuentaExistente = buscarCuentaPorNumeroCuenta(cuentas, cuentaActualizada.getNumeroCuenta());
+
+            if (cuentaExistente != null) {
+                cuentas.remove(cuentaExistente);
+                cuentas.add(cuentaActualizada);
+                clienteDao.update(cliente);
+            }
+        }
+    }
+
+    private Cuenta buscarCuentaPorNumeroCuenta(Set<Cuenta> cuentas, long numeroCuenta) {
+        for (Cuenta cuenta : cuentas) {
+            if (cuenta.getNumeroCuenta() == numeroCuenta) {
+                return cuenta;
+            }
+        }
+        return null;
     }
 }

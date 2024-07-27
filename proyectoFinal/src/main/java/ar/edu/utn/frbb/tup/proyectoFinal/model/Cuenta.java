@@ -24,10 +24,10 @@ public class Cuenta {
     private Set<Transaccion> historialTransacciones;
 
     public Cuenta() {
-        this.numeroCuenta = new Random().nextLong();
+        Random random = new Random();
+        this.numeroCuenta = 1 + (Math.abs(random.nextLong()) % 99999999);
         this.fechaCreacion = LocalDateTime.now();
-        this.balance = 1000000;
-        this.tipoCuenta = tipoCuenta;
+        this.balance = 1000;
         this.historialTransacciones = new HashSet<>();
     }
 

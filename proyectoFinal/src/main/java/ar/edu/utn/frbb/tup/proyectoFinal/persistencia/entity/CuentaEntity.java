@@ -33,8 +33,12 @@ public class CuentaEntity extends BaseEntity {
         cuenta.setFechaCreacion(this.fechaCreacion);
         cuenta.setMoneda(TipoMoneda.valueOf(this.moneda));
         cuenta.setHistorialTransacciones(this.historialTransacciones);
+        cuenta.setTitular(this.titular);
+
+
         return cuenta;
     }
+
 
     public Cliente getTitular() {
         return titular;

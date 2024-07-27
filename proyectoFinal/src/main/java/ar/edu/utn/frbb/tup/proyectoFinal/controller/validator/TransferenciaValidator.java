@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class TransferenciaValidator {
     public void validate(TransferenciaDto transferenciaDto) throws NotPosibleException, InputErrorException {
         if ((!transferenciaDto.getCuentaOrigen().matches("\\d{8}")) || (!transferenciaDto.getCuentaDestino().matches("\\d{8}"))) {
-            throw new InputErrorException("El DNI ingresado no es válido.");
+            throw new InputErrorException("El NUMERO DE CUENTA ingresado no es válido.");
         }
         double monto;
         try {

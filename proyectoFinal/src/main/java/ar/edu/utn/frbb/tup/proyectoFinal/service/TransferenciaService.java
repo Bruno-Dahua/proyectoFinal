@@ -28,27 +28,15 @@ public class TransferenciaService {
     private BanelcoService banelcoService;
 
     public RespuestaTransaccionDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException, CuentaDoesntExistException {
-        // Buscar clientes y sus cuentas
-        Cliente clienteOrigen = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaOrigen()));
-        Cliente clienteDestino = clienteDao.find(Long.parseLong(transferenciaDto.getCuentaDestino()));
 
-        if (clienteOrigen == null) {
-            throw new ClienteDoesntExistException("El cliente con DNI " + transferenciaDto.getCuentaOrigen() + " no existe.");
-        } else if (clienteDestino == null) {
-            throw new ClienteDoesntExistException("El cliente con DNI " + transferenciaDto.getCuentaDestino() + " no existe.");
-        }
-
-        Set<Cuenta> cuentasOrigen = clienteOrigen.getCuentas();
-        Set<Cuenta> cuentasDestino = clienteDestino.getCuentas();
-
-        Cuenta cuentaOrigen = cuentaDao.obtenerCuentaPrioritaria(cuentasOrigen, Long.parseLong(transferenciaDto.getCuentaOrigen()));
+        Cuenta cuentaOrigen = cuentaDao.findByNumeroCuenta(Long.parseLong(transferenciaDto.getCuentaOrigen()));
         if (cuentaOrigen == null) {
-            throw new CuentaDoesntExistException("La cuenta de origen no existe.");
+            throw new CuentaDoesntExistException("La cuenta " + transferenciaDto.getCuentaOrigen() + " (cuenta de origen) no existe.");
         }
 
-        Cuenta cuentaDestino = cuentaDao.obtenerCuentaPrioritaria(cuentasDestino, Long.parseLong(transferenciaDto.getCuentaDestino()));
+        Cuenta cuentaDestino = cuentaDao.findByNumeroCuenta(Long.parseLong(transferenciaDto.getCuentaDestino()));
         if (cuentaDestino == null) {
-            throw new CuentaDoesntExistException("La cuenta de destino no existe.");
+            throw new CuentaDoesntExistException("La cuenta " + transferenciaDto.getCuentaDestino() + " (cuenta de destino) no existe.");
         }
 
         if (!cuentaOrigen.getMoneda().equals(cuentaDestino.getMoneda())) {
@@ -57,7 +45,7 @@ public class TransferenciaService {
 
         RespuestaTransaccionDto respuestaTransferenciaDto = new RespuestaTransaccionDto();
 
-        if (clienteOrigen.getBanco().equals(clienteDestino.getBanco())) {
+        if ((cuentaOrigen.getTitular().getBanco()).equals(cuentaDestino.getTitular().getBanco())) {
             return generarRespuestaYActualizar(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
         } else {
             if (banelcoService.servicioDeBanelco(transferenciaDto)) {

@@ -23,28 +23,20 @@ public class DepositoService {
 
     @Autowired
     private CuentaService cuentaService;
+    @Autowired
+    private ClienteService clienteService;
 
     public RespuestaTransaccionDto realizarDeposito(DepositoDto depositoDto) throws ClienteDoesntExistException, CuentaDoesntExistException, NotPosibleException {
-        Cliente cliente = clienteDao.find(Long.parseLong(depositoDto.getCuenta()));
-
-        if (cliente == null) {
-            throw new ClienteDoesntExistException("El cliente con DNI: " + depositoDto.getCuenta() + " no existe.");
-        }
-
-        Set<Cuenta> cuentas = cliente.getCuentas();
-
-        Cuenta cuenta = cuentaDao.obtenerCuentaPrioritaria(cuentas, Long.parseLong(depositoDto.getCuenta()));
+        Cuenta cuenta = cuentaDao.findByNumeroCuenta(Long.parseLong(depositoDto.getCuenta()));
 
         if (cuenta == null) {
-            throw new CuentaDoesntExistException("La cuenta con DNI: " + depositoDto.getCuenta() + " no existe.");
+            throw new CuentaDoesntExistException("La cuenta " + depositoDto.getCuenta() + " no existe.");
         }
         if (!cuenta.getMoneda().equals(depositoDto.getMoneda())) {
             throw new NotPosibleException("Las monedas de las cuentas no coinciden");
         }
 
         RespuestaTransaccionDto respuestaTransaccionDto = new RespuestaTransaccionDto();
-
-        cuentaDao.update(cuenta);
 
         return realizarDepositoYActualizarBalance(cuenta, depositoDto, respuestaTransaccionDto);
     }
@@ -55,7 +47,7 @@ public class DepositoService {
         double monto = Double.parseDouble(depositoDto.getMonto());
         double comision = calcularComision(depositoDto);
 
-        cuentaService.actualizarBalanceCuenta(cuenta, monto, comision);
+        cuentaService.actualizarBalanceDeposito(cuenta, monto, comision);
 
         save(cuenta, deposito, "Deposito a la cuenta " + cuenta.getNumeroCuenta() + ".");
 

@@ -31,19 +31,17 @@ public class CuentaController {
     @PostMapping
     public ResponseEntity<String> crearCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException, CuentaAlreadyExistException {
         cuentaValidator.validate(cuentaDto);
-        if (cuentaService.darDeAltaCuenta(cuentaDto)){
-            System.out.println("Cuenta creada con exito.");
-            return ResponseEntity.ok("Cuenta creada con exito.");
-        } else {
-            System.out.println("No fue posible crear la cuenta.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No fue posible crear la cuenta.");
-        }
+        Cuenta cuenta = cuentaService.darDeAltaCuenta(cuentaDto);
+        System.out.println("Cuenta creada con exito. NUMERO DE CUENTA: " + cuenta.getNumeroCuenta());
+        return ResponseEntity.ok("Cuenta creada con exito. NUMERO DE CUENTA: " + cuenta.getNumeroCuenta());
+
     }
 
-    @GetMapping("/{dni}")
-    public ResponseEntity<Set<Cuenta>> mostrarCuentas(@PathVariable long dni, WebRequest request)
+    @GetMapping("/{numeroCuenta}")
+    public ResponseEntity<Cuenta> mostrarCuentas(@PathVariable long numeroCuenta, WebRequest request)
             throws ClienteDoesntExistException, NotPosibleException {
-        Set<Cuenta> cuentas = clienteService.getCuentasPorDni(dni);
-        return ResponseEntity.ok(cuentas);
+        Cuenta cuenta = cuentaService.buscarCuentaPorNumeroCuenta(numeroCuenta);
+        return ResponseEntity.ok(cuenta);
     }
+
 }

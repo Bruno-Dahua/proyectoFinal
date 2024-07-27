@@ -8,6 +8,7 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistExce
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.TipoCuentaAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
+import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,8 @@ public class ClienteService {
     ClienteDao clienteDao;
     @Autowired
     private CuentaService cuentaService;
+    @Autowired
+    private CuentaDao cuentaDao;
 
     public ClienteService(ClienteDao clienteDao) {
         this.clienteDao = clienteDao;
@@ -95,16 +98,6 @@ public class ClienteService {
         }
     }
 
-    public Set<Cuenta> getCuentasPorDni(long dni) throws ClienteDoesntExistException, NotPosibleException {
-        Cliente cliente = clienteDao.find(dni);
-        if (cliente == null) {
-            throw new ClienteDoesntExistException("No existe el cliente con DNI " + dni + ".");
-        }
-        if (cliente.getCuentas() == null || cliente.getCuentas().isEmpty()) {
-            throw new NotPosibleException("El cliente con DNI " + cliente.getDni() + " no tiene cuentas.");
-        }
-        return cliente.getCuentas();
-    }
 
 
     private Cliente toCliente(ClienteDto clienteDto) {
