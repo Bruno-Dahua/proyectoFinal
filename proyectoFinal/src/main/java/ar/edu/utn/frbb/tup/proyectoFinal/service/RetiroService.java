@@ -52,7 +52,7 @@ public class RetiroService {
             save(cuenta, retiro, "Retiro de la cuenta " + cuenta.getNumeroCuenta() + ".");
 
             respuestaRetiroDto.setEstado("EXITOSA");
-            respuestaRetiroDto.setMensaje("Se realizó el deposito exitosamente. Número de transaccion: " + retiro.getNumeroTransaccion() + ". Realizado el " + retiro.getFecha() + ". Saldo actual: " + (cuenta.getBalance() > 0 ? (retiroDto.getMoneda() == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuenta.getBalance() : "Usted tiene una deuda con el Banco."));
+            respuestaRetiroDto.setMensaje("Se realizó el retiro exitosamente. Número de transaccion: " + retiro.getNumeroTransaccion() + ". Realizado el " + retiro.getFecha() + ". Saldo actual: " + (cuenta.getBalance() > 0 ? (retiroDto.getMoneda() == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuenta.getBalance() : "Usted tiene una deuda con el Banco."));
 
             return respuestaRetiroDto;
         }else {
