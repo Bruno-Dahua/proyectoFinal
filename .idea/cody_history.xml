@@ -594,6 +594,33 @@
                 </messages>
                 <updatedAt value="2024-07-27T20:36:33.2716845" />
               </chat>
+              <chat>
+                <internalId value="df55ed82-496d-493e-9438-04508dfab1f3" />
+              </chat>
+              <chat>
+                <internalId value="e22665c8-6cb0-4df5-ac44-7233928941c0" />
+                <messages>
+                  <list>
+                    <message>
+                      <speaker value="HUMAN" />
+                      <text value="{&#10;    &amp;quot;errorMessage&amp;quot;: &amp;quot;No enum constant ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona.f&amp;quot;&#10;}&#10;QUE SIGNIFICA?? CUANDO HAGO PUT DE CLIENTE" />
+                    </message>
+                    <message>
+                      <speaker value="ASSISTANT" />
+                      <text value="Según el contexto del código proporcionado, el mensaje de error `&quot;No enum constant ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona.f&quot;` indica que se está intentando asignar un valor inválido al campo `tipoPersona` de la clase `Cliente`.&#10;&#10;En la clase `TipoPersona`, hay un método estático `fromString` que convierte una cadena de texto en una instancia de `TipoPersona`. Este método recorre todas las constantes de la enumeración `TipoPersona` y busca una que tenga una descripción que coincida con la cadena de texto proporcionada (ignorando mayúsculas y minúsculas). Si no se encuentra ninguna coincidencia, se lanza una excepción `IllegalArgumentException` con el mensaje de error que estás viendo.&#10;&#10;Entonces, cuando haces una solicitud PUT para actualizar un objeto `Cliente`, el valor que estás enviando para el campo `tipoPersona` no coincide con ninguna de las constantes de la enumeración `TipoPersona`. Por ejemplo, si la enumeración `TipoPersona` tiene constantes como &quot;FISICA&quot; y &quot;JURIDICA&quot;, y en la solicitud PUT envías un valor como &quot;f&quot;, el método `fromString` no encontrará una coincidencia y lanzará la excepción con ese mensaje de error.&#10;&#10;Para solucionar este problema, debes asegurarte de que el valor que estás enviando para el campo `tipoPersona` en la solicitud PUT coincida exactamente con la descripción de una de las constantes de la enumeración `TipoPersona` (teniendo en cuenta mayúsculas y minúsculas)." />
+                    </message>
+                    <message>
+                      <speaker value="HUMAN" />
+                      <text value="PERO SI ES CORRECTO LO QUE ESTOY PONIENDO" />
+                    </message>
+                    <message>
+                      <speaker value="ASSISTANT" />
+                      <text value="Según el código proporcionado, si estás enviando un valor correcto para el campo `tipoPersona` en la solicitud PUT, no deberías estar recibiendo ese error.&#10;&#10;En la clase `Cliente`, el campo `tipoPersona` es de tipo `TipoPersona`, que es una enumeración. En el constructor `Cliente(ClienteDto clienteDto)`, se asigna el valor de `tipoPersona` utilizando el método estático `TipoPersona.fromString(clienteDto.getTipoPersona())`.&#10;&#10;El método `fromString` está diseñado para buscar una constante de la enumeración `TipoPersona` cuya descripción coincida con la cadena de texto proporcionada (ignorando mayúsculas y minúsculas). Si no se encuentra una coincidencia, se lanza la excepción `IllegalArgumentException` con el mensaje de error que estás recibiendo.&#10;&#10;Por lo tanto, si estás enviando un valor válido para `tipoPersona` en la solicitud PUT, y aún así estás recibiendo ese error, podría haber un problema con la forma en que se están manejando los datos en el lado del servidor.&#10;&#10;Algunas sugerencias para investigar:&#10;&#10;1. Verifica que el valor que estás enviando para `tipoPersona` en la solicitud PUT coincida exactamente con la descripción de una de las constantes de la enumeración `TipoPersona` (teniendo en cuenta mayúsculas y minúsculas).&#10;&#10;2. Revisa el código del controlador que maneja la solicitud PUT para ver cómo se está obteniendo y procesando el valor de `tipoPersona` antes de crear o actualizar el objeto `Cliente`.&#10;&#10;3. Agrega registros de depuración (logs) en el código para rastrear el valor que se está recibiendo para `tipoPersona` y el punto en el que se produce la excepción.&#10;&#10;4. Verifica si hay alguna lógica adicional en el código que pueda estar afectando el procesamiento del valor de `tipoPersona`.&#10;&#10;Si después de investigar no encuentras la causa del problema, proporciona más detalles sobre el valor que estás enviando para `tipoPersona` y el flujo de código que se está ejecutando cuando ocurre el error." />
+                    </message>
+                  </list>
+                </messages>
+                <updatedAt value="2024-07-28T17:32:59.9107074" />
+              </chat>
             </list>
           </chats>
         </AccountData>

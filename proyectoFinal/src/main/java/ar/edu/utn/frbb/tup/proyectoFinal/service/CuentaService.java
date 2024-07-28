@@ -63,8 +63,12 @@ public class CuentaService {
         return cuenta;
     }
 
-    public Cuenta buscarCuentaPorNumeroCuenta(long numeroCuenta) {
-        return cuentaDao.findByNumeroCuenta(numeroCuenta);
+    public Cuenta buscarCuentaPorNumeroCuenta(long numeroCuenta) throws NotPosibleException {
+        if (cuentaDao.findByNumeroCuenta(numeroCuenta) != null){
+            return cuentaDao.findByNumeroCuenta(numeroCuenta);
+        } else{
+            throw new NotPosibleException("No existe una cuenta con ese número");
+        }
     }
 
     public void actualizarTitularCuenta(Cliente clienteActualizado, long dniAntiguo){

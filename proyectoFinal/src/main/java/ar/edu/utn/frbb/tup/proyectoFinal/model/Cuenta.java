@@ -3,13 +3,13 @@ package ar.edu.utn.frbb.tup.proyectoFinal.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-@JsonIgnoreProperties({"titular"})
 public class Cuenta {
     private long numeroCuenta;
     private LocalDateTime fechaCreacion;
@@ -17,7 +17,7 @@ public class Cuenta {
     private TipoCuenta tipoCuenta;
     private TipoMoneda moneda;
 
-    @JsonBackReference
+    @JsonManagedReference
     private Cliente titular;
 
     @JsonIgnore
