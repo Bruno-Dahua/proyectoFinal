@@ -15,19 +15,16 @@ public class ClienteDao extends AbstractBaseDao {
     @Autowired
     CuentaDao cuentaDao;
 
-    public Cliente find(long dni) throws ClienteDoesntExistException {
+    public Cliente find(String dni) throws ClienteDoesntExistException {
         for (Object object : getInMemoryDatabase().values()) {
             ClienteEntity clienteEntity = (ClienteEntity) object;
-            try {
-                if (Long.parseLong(clienteEntity.getDni()) == dni) {
-                    return clienteEntity.toCliente();
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Error al convertir DNI: " + clienteEntity.getDni());
+            if (clienteEntity.getDni().equals(dni)) {
+                return clienteEntity.toCliente();
             }
         }
         return null;
     }
+
 
 
     public Cliente save(Cliente cliente) {
@@ -40,9 +37,9 @@ public class ClienteDao extends AbstractBaseDao {
         return getInMemoryDatabase().remove(dni) != null;
     }
 
-    public void update(Cliente cliente) {
+    public boolean update(Cliente cliente) {
         ClienteEntity entity = new ClienteEntity(cliente);
-        getInMemoryDatabase().put(cliente.getDni(), entity);
+        return getInMemoryDatabase().put(cliente.getDni(), entity) != null;
     }
 
     @Override

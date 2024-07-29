@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Cliente extends Persona{
-    private TipoPersona tipoPersona;
+    private String tipoPersona;
     private String banco;
     private LocalDate fechaAlta;
 
@@ -22,17 +22,16 @@ public class Cliente extends Persona{
     }
     public Cliente(ClienteDto clienteDto) {
         super(clienteDto.getDni(), clienteDto.getApellido(), clienteDto.getNombre(), clienteDto.getFechaNacimiento());
-        this.tipoPersona = TipoPersona.fromString(clienteDto.getTipoPersona());
+        this.tipoPersona = clienteDto.getTipoPersona();
         fechaAlta = LocalDate.now();
         banco = clienteDto.getBanco();
-        //cuentas = getCuentas();
     }
 
-    public TipoPersona getTipoPersona() {
+    public String getTipoPersona() {
         return tipoPersona;
     }
 
-    public void setTipoPersona(TipoPersona tipoPersona) {
+    public void setTipoPersona(String tipoPersona) {
         this.tipoPersona = tipoPersona;
     }
 

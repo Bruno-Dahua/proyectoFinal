@@ -36,7 +36,7 @@ public class CuentaService {
         cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
         cuenta.setMoneda(cuentaDto.getMoneda());
 
-        long dniTitular = Long.parseLong(cuentaDto.getTitular());
+        String dniTitular = cuentaDto.getTitular();
         // Obtener el titular desde el clienteDao
         Cliente titular = clienteService.buscarClientePorDni(dniTitular);
         cuenta.setTitular(titular);
@@ -55,7 +55,7 @@ public class CuentaService {
         }
 
         // Agregar la cuenta al cliente
-        clienteService.agregarCuenta(cuenta, dniTitular);
+        clienteService.agregarCuenta(cuenta, Long.parseLong(dniTitular));
 
         // Guardar la cuenta en la base de datos
         cuentaDao.save(cuenta);
@@ -71,8 +71,8 @@ public class CuentaService {
         }
     }
 
-    public void actualizarTitularCuenta(Cliente clienteActualizado, long dniAntiguo){
-        Set<Cuenta> cuentasCliente = cuentaDao.getCuentasByCliente(dniAntiguo);
+    public void actualizarTitularCuenta(Cliente clienteActualizado, String dniAntiguo){
+        Set<Cuenta> cuentasCliente = cuentaDao.getCuentasByCliente(Long.parseLong(dniAntiguo));
 
         for (Cuenta c : cuentasCliente){
             c.setTitular(clienteActualizado);

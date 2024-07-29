@@ -30,24 +30,20 @@ public class ClienteController {
     @PostMapping
     public ResponseEntity<String> crearCliente(@RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException {
         clienteValidator.validate(clienteDto);
-        if (clienteService.darDeAltaCliente(clienteDto)) {
-            System.out.println("El cliente con DNI " + clienteDto.getDni() + " fue creado con exito.");
-            return ResponseEntity.ok("El cliente con DNI " + clienteDto.getDni() + " fue creado con exito.");
-        } else {
-            System.out.println("No fue posible crear el cliente con DNI " + clienteDto.getDni() + ".");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No fue posible crear el cliente con DNI " + clienteDto.getDni() + ".");
-        }
+        clienteService.darDeAltaCliente(clienteDto);
+        System.out.println("El cliente con DNI " + clienteDto.getDni() + " fue creado con exito.");
+        return ResponseEntity.ok("El cliente con DNI " + clienteDto.getDni() + " fue creado con exito.");
     }
 
     //Endpoint para mostrar un cliente, buscandolo por su dni
     @GetMapping("/{dni}")
-    public Cliente mostrarClientePorDni(@PathVariable long dni, WebRequest request) throws ClienteDoesntExistException {
+    public Cliente mostrarClientePorDni(@PathVariable String dni, WebRequest request) throws ClienteDoesntExistException {
         return clienteService.buscarClientePorDni(dni);
     }
 
     //Endpoint para actualizar un cliente, buscandolo por su dni. Se valida el ingreso de los datos necesarios
     @PutMapping("/{dni}")
-    public ResponseEntity<String> actualizarClientePorDni(@PathVariable long dni, @RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException {
+    public ResponseEntity<String> actualizarClientePorDni(@PathVariable String dni, @RequestBody ClienteDto clienteDto, WebRequest request) throws ClienteAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException {
         clienteValidator.validate(clienteDto);
         clienteService.actualizarCliente(dni, clienteDto);
         return ResponseEntity.ok("El cliente con DNI " + dni + " fue actualizado con exito.");
@@ -55,7 +51,7 @@ public class ClienteController {
 
     //Endpoint para eliminar un cliente, buscandolo por su DNI
     @DeleteMapping("/{dni}")
-    public ResponseEntity<String> eliminarClientePorDni(@PathVariable long dni) throws ClienteDoesntExistException {
+    public ResponseEntity<String> eliminarClientePorDni(@PathVariable String dni) throws ClienteDoesntExistException {
         if (clienteService.eliminarCliente(dni)) {
             System.out.println("El cliente con DNI " + dni + " fue eliminado con exito.");
             return ResponseEntity.ok("El cliente con DNI " + dni + " fue eliminado con exito.");

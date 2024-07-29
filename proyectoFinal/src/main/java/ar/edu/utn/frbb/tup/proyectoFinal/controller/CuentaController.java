@@ -2,6 +2,7 @@ package ar.edu.utn.frbb.tup.proyectoFinal.controller;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.CuentaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.validator.CuentaValidator;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.ClienteService;
@@ -29,7 +30,8 @@ public class CuentaController {
     //Endpoint para crear una cuenta. Con condiciones, debe existir el cliente, los datos del titular deben ser los mismos
     //y ademas el cliente no puede tener una cuenta del mismo tipo y moneda.
     @PostMapping
-    public ResponseEntity<String> crearCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException, CuentaAlreadyExistException {
+    public ResponseEntity<String> crearCuenta(@RequestBody CuentaDto cuentaDto, WebRequest request)
+            throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, InputErrorException, CuentaAlreadyExistException {
         cuentaValidator.validate(cuentaDto);
         Cuenta cuenta = cuentaService.darDeAltaCuenta(cuentaDto);
         System.out.println("Cuenta creada con exito. NUMERO DE CUENTA: " + cuenta.getNumeroCuenta());
@@ -39,9 +41,16 @@ public class CuentaController {
 
     @GetMapping("/{numeroCuenta}")
     public ResponseEntity<Cuenta> mostrarCuentas(@PathVariable long numeroCuenta, WebRequest request)
-            throws ClienteDoesntExistException, NotPosibleException {
+            throws NotPosibleException {
         Cuenta cuenta = cuentaService.buscarCuentaPorNumeroCuenta(numeroCuenta);
         return ResponseEntity.ok(cuenta);
     }
 
+    @GetMapping("/{dni}/cuentas")
+    public ResponseEntity<Set<Cuenta>> mostrarCuentasPorDni(@PathVariable String dni, WebRequest request)
+            throws ClienteDoesntExistException {
+        Cliente cliente = clienteService.buscarClientePorDni(dni);
+        Set<Cuenta> cuentas = cliente.getCuentas();
+        return ResponseEntity.ok(cuentas);
+    }
 }

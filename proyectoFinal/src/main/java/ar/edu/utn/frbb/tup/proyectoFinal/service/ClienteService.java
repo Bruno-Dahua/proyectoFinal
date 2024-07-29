@@ -29,11 +29,11 @@ public class ClienteService {
     }
 
     //devuelve un booleano para que en el controller pueda dar una buena o mala respuesta
-    public boolean darDeAltaCliente(ClienteDto clienteDto) throws ClienteDoesntExistException, NotPosibleException {
+    public void darDeAltaCliente(ClienteDto clienteDto) throws ClienteDoesntExistException, NotPosibleException {
 
         Cliente cliente = new Cliente(clienteDto);
 
-        if (clienteDao.find(cliente.getDni()) != null) {
+        if (clienteDao.find(cliente.getDniString()) != null) {
             throw new NotPosibleException("El cliente con DNI " + cliente.getDni() + " ya existe.");
         }
 
@@ -41,14 +41,12 @@ public class ClienteService {
             throw new NotPosibleException("El cliente con DNI " + cliente.getDni() + " no puede registrarse, no cumple con la edad mínima.");
         }
 
-        else {
-            clienteDao.save(cliente);
-            return true;
-        }
+        clienteDao.save(cliente);
+
     }
 
     public void agregarCuenta(Cuenta cuenta, long dniTitular) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException {
-        Cliente titular = buscarClientePorDni(dniTitular);
+        Cliente titular = buscarClientePorDni(String.valueOf(dniTitular));
         cuenta.setTitular(titular);
 
         titular.addCuenta(cuenta);
@@ -56,8 +54,7 @@ public class ClienteService {
         clienteDao.save(titular);
     }
 
-    public Cliente buscarClientePorDni(long dni) throws ClienteDoesntExistException {
-
+    public Cliente buscarClientePorDni(String dni) throws ClienteDoesntExistException {
         Cliente cliente = clienteDao.find(dni);
 
         if (cliente == null) {
@@ -67,11 +64,11 @@ public class ClienteService {
         return cliente;
     }
 
-    public void actualizarCliente(long dniAntiguo, ClienteDto clienteDto) throws ClienteDoesntExistException, NotPosibleException {
 
+    public void actualizarCliente(String dniAntiguo, ClienteDto clienteDto) throws ClienteDoesntExistException, NotPosibleException {
         Cliente clienteExistente = clienteDao.find(dniAntiguo);
 
-        if (clienteExistente == null){ //Si no existe el cliente
+        if (clienteExistente == null) {
             throw new ClienteDoesntExistException("No existe el cliente con DNI " + dniAntiguo + ".");
         }
 
@@ -85,16 +82,16 @@ public class ClienteService {
         cuentaService.actualizarTitularCuenta(clienteActualizado, dniAntiguo);
 
         clienteDao.update(clienteActualizado);
-
-        clienteDao.delete(dniAntiguo);
+        clienteDao.delete(Long.parseLong(dniAntiguo));
     }
 
-    public boolean eliminarCliente(long dni) throws ClienteDoesntExistException {
+
+    public boolean eliminarCliente(String dni) throws ClienteDoesntExistException {
         Cliente clienteEliminar = clienteDao.find(dni);
         if (clienteEliminar == null) { //Si no existe el cliente
             throw new ClienteDoesntExistException("No existe el cliente con DNI " + dni + ".");
         }else {
-            return clienteDao.delete(dni);
+            return clienteDao.delete(Long.parseLong(dni));
         }
     }
 
@@ -106,7 +103,7 @@ public class ClienteService {
         cliente.setApellido(clienteDto.getApellido());
         cliente.setFechaNacimiento(clienteDto.getFechaNacimiento());
         cliente.setBanco(clienteDto.getBanco());
-        cliente.setTipoPersona(TipoPersona.valueOf(clienteDto.getTipoPersona()));
+        cliente.setTipoPersona(clienteDto.getTipoPersona());
         cliente.setDni(clienteDto.getDni());
         return cliente;
     }

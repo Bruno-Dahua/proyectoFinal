@@ -35,6 +35,10 @@ public class ClienteValidator {
         if (!clienteDto.getDni().matches("\\d{8}")) {
             throw new InputErrorException("El DNI ingresado no es válido.");
         }
+
+        if (!"PERSONA_FISICA".equalsIgnoreCase(clienteDto.getTipoPersona()) && !"PERSONA_JURIDICA".equalsIgnoreCase(clienteDto.getTipoPersona())) {
+            throw new InputErrorException("El TIPO DE PERSONA no es valido.");
+        }
     }
 }
 
