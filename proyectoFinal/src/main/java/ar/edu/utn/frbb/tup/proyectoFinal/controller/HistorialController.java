@@ -26,18 +26,10 @@ public class HistorialController {
     @Autowired
     private HistorialService historialService;
 
-    @GetMapping("/{cuentaId}/transacciones")
-    public ResponseEntity<RespuestaHistorialDto> obtenerHistorial(@PathVariable long cuentaId) throws NotPosibleException {
-        // Busco la cuenta por su numeroCuenta
-        Cuenta cuenta = historialService.buscarCuentaPorId(cuentaId);
-
-        if (cuenta == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        RespuestaHistorialDto respuesta = historialService.obtenerHistorial(cuentaId);
+    @GetMapping("/{numeroCuenta}/transacciones")
+    public ResponseEntity<RespuestaHistorialDto> obtenerHistorial(@PathVariable long numeroCuenta) throws NotPosibleException {
+        RespuestaHistorialDto respuesta = historialService.obtenerHistorial(numeroCuenta);
         return ResponseEntity.ok(respuesta);
+
     }
-
-
 }

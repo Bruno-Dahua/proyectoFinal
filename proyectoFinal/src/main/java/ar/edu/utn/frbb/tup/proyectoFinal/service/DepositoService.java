@@ -23,8 +23,12 @@ public class DepositoService {
 
     @Autowired
     private CuentaService cuentaService;
+
     @Autowired
     private ClienteService clienteService;
+
+    @Autowired
+    private Transaccion transaccion;
 
     public RespuestaTransaccionDto realizarDeposito(DepositoDto depositoDto) throws ClienteDoesntExistException, CuentaDoesntExistException, NotPosibleException {
         Cuenta cuenta = cuentaDao.findByNumeroCuenta(Long.parseLong(depositoDto.getCuenta()));
@@ -45,35 +49,16 @@ public class DepositoService {
         Deposito deposito = toDeposito(depositoDto);
 
         double monto = Double.parseDouble(depositoDto.getMonto());
-        double comision = calcularComision(depositoDto);
+        double comision = transaccion.calcularComision(depositoDto);
 
-        cuentaService.actualizarBalanceDeposito(cuenta, monto, comision);
+        cuentaService.actualizarBalance(cuenta, monto, comision, TipoMovimiento.DEPOSITO);
 
-        save(cuenta, deposito, "Deposito a la cuenta " + cuenta.getNumeroCuenta() + ".");
+        transaccion.save(cuenta, deposito, TipoMovimiento.DEPOSITO, "Deposito a la cuenta " + cuenta.getNumeroCuenta() + ".");
 
         respuestaDepositoDto.setEstado("EXITOSA");
         respuestaDepositoDto.setMensaje("Se realizó el deposito exitosamente. Número de transaccion: " + deposito.getNumeroTransaccion() + ". Realizado el " + deposito.getFecha() + ". Saldo actual: " + (cuenta.getBalance() > 0 ? (depositoDto.getMoneda() == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuenta.getBalance() : "Usted tiene una deuda con el Banco."));
 
         return respuestaDepositoDto;
-    }
-
-    private double calcularComision(DepositoDto depositoDto) {
-        if (depositoDto.getMoneda() == TipoMoneda.PESOS && Double.parseDouble(depositoDto.getMonto()) >= 1000000) {
-            return 0.02 * Double.parseDouble(depositoDto.getMonto());
-        } else if (depositoDto.getMoneda() == TipoMoneda.DOLARES && Double.parseDouble(depositoDto.getMonto()) >= 5000) {
-            return 0.005 * Double.parseDouble(depositoDto.getMonto());
-        }
-        return 0;
-    }
-
-    private void save(Cuenta cuenta, Deposito deposito, String descripcion) {
-        Transaccion transaccion = new Transaccion();
-        transaccion.setNumeroMovimiento(deposito.getNumeroTransaccion());
-        transaccion.setFecha(deposito.getFecha());
-        transaccion.setMonto(+deposito.getMonto());
-        transaccion.setTipo(TipoMovimiento.DEPOSITO);
-        transaccion.setDescripcion(descripcion);
-        cuenta.addToHistorial(transaccion);
     }
 
     private Deposito toDeposito(DepositoDto depositoDto) {

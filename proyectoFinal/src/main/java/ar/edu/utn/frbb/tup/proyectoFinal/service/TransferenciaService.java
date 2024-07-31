@@ -27,6 +27,9 @@ public class TransferenciaService {
     @Autowired
     private BanelcoService banelcoService;
 
+    @Autowired
+    private Transaccion transaccion;
+
     public RespuestaTransaccionDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException, CuentaDoesntExistException {
 
         Cuenta cuentaOrigen = cuentaDao.findByNumeroCuenta(Long.parseLong(transferenciaDto.getCuentaOrigen()));
@@ -39,17 +42,17 @@ public class TransferenciaService {
             throw new CuentaDoesntExistException("La cuenta " + transferenciaDto.getCuentaDestino() + " (cuenta de destino) no existe.");
         }
 
-        if (!cuentaOrigen.getMoneda().equals(cuentaDestino.getMoneda())) {
+        if (!cuentaOrigen.getMoneda().equals(cuentaDestino.getMoneda()) || !cuentaOrigen.getMoneda().equals(transferenciaDto.getMoneda()) || !cuentaDestino.getMoneda().equals(transferenciaDto.getMoneda())) {
             throw new NotPosibleException("Las monedas de las cuentas no coinciden.");
         }
 
         RespuestaTransaccionDto respuestaTransferenciaDto = new RespuestaTransaccionDto();
 
         if ((cuentaOrigen.getTitular().getBanco()).equals(cuentaDestino.getTitular().getBanco())) {
-            return generarRespuestaYActualizar(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
+            return realizarTransferenciaYActualizarBalance(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
         } else {
             if (banelcoService.servicioDeBanelco(transferenciaDto)) {
-                return generarRespuestaYActualizar(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
+                return realizarTransferenciaYActualizarBalance(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
             } else {
                 respuestaTransferenciaDto.setEstado("FALLIDA");
                 respuestaTransferenciaDto.setMensaje("No es posible realizar la transferencia, los bancos son diferentes.");
@@ -59,18 +62,19 @@ public class TransferenciaService {
     }
 
 
-    private RespuestaTransaccionDto generarRespuestaYActualizar(TransferenciaDto transferenciaDto, Cuenta cuentaOrigen, Cuenta cuentaDestino, RespuestaTransaccionDto respuestaTransferenciaDto) {
+    private RespuestaTransaccionDto realizarTransferenciaYActualizarBalance(TransferenciaDto transferenciaDto, Cuenta cuentaOrigen, Cuenta cuentaDestino, RespuestaTransaccionDto respuestaTransferenciaDto) {
         Transferencia transferencia = toTransferencia(transferenciaDto);
 
         if (cuentaOrigen.getBalance() >= Double.parseDouble(transferenciaDto.getMonto())) {
             double monto = Double.parseDouble(transferenciaDto.getMonto());
-            double comision = calcularComision(transferenciaDto);
+            double comision = transaccion.calcularComision(transferenciaDto);
 
-            cuentaService.actualizarBalanceTransferencia(cuentaOrigen, cuentaDestino, monto, comision);
+            cuentaService.actualizarBalance(cuentaOrigen, monto, comision, TipoMovimiento.TRANSFERENCIA_SALIDA);
+            cuentaService.actualizarBalance(cuentaDestino, monto, comision, TipoMovimiento.TRANSFERENCIA_ENTRADA);
 
             // Creo y agrego las transacciones al historial
-            save(cuentaOrigen, transferencia, TipoMovimiento.TRANSFERENCIA_SALIDA, "Transferencia a cuenta " + cuentaDestino.getNumeroCuenta());
-            save(cuentaDestino, transferencia, TipoMovimiento.TRANSFERENCIA_ENTRADA, "Transferencia desde cuenta " + cuentaOrigen.getNumeroCuenta());
+            transaccion.save(cuentaOrigen, transferencia, TipoMovimiento.TRANSFERENCIA_SALIDA, "Transferencia a cuenta " + cuentaDestino.getNumeroCuenta());
+            transaccion.save(cuentaDestino, transferencia, TipoMovimiento.TRANSFERENCIA_ENTRADA, "Transferencia desde cuenta " + cuentaOrigen.getNumeroCuenta());
 
             // Actualizo las cuentas en la base de datos
             cuentaDao.update(cuentaOrigen);
@@ -85,25 +89,6 @@ public class TransferenciaService {
             respuestaTransferenciaDto.setMensaje("Saldo insuficiente para realizar la transferencia.");
             return respuestaTransferenciaDto;
         }
-    }
-
-    private double calcularComision(TransferenciaDto transferenciaDto) {
-        if (transferenciaDto.getMoneda() == TipoMoneda.PESOS && Double.parseDouble(transferenciaDto.getMonto()) >= 1000000) {
-            return 0.02 * Double.parseDouble(transferenciaDto.getMonto());
-        } else if (transferenciaDto.getMoneda() == TipoMoneda.DOLARES && Double.parseDouble(transferenciaDto.getMonto()) >= 5000) {
-            return 0.005 * Double.parseDouble(transferenciaDto.getMonto());
-        }
-        return 0;
-    }
-
-    private void save(Cuenta cuenta, Transferencia transferencia, TipoMovimiento tipo, String descripcion) {
-        Transaccion transaccion = new Transaccion();
-        transaccion.setNumeroMovimiento(transferencia.getNumeroTransaccion());
-        transaccion.setFecha(transferencia.getFecha());
-        transaccion.setMonto(tipo == TipoMovimiento.TRANSFERENCIA_SALIDA ? -transferencia.getMonto() : +transferencia.getMonto());
-        transaccion.setTipo(tipo);
-        transaccion.setDescripcion(descripcion);
-        cuenta.addToHistorial(transaccion);
     }
 
     private Transferencia toTransferencia(TransferenciaDto transferenciaDto) {

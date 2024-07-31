@@ -37,8 +37,4 @@ public class HistorialService {
 
         return respuestaHistorial;
     }
-
-    public Cuenta buscarCuentaPorId(long cuentaId) {
-        return cuentaDao.findByNumeroCuenta(cuentaId);
-    }
 }

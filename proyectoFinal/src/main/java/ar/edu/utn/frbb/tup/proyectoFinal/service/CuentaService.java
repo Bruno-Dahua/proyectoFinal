@@ -1,10 +1,7 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.service;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.CuentaDto;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoCuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
@@ -23,13 +20,11 @@ public class CuentaService {
     private ClienteDao clienteDao;
 
     @Autowired
-    ClienteService clienteService;
+    private ClienteService clienteService;
 
-    //Generar casos de test para darDeAltaCuenta
-    //    1 - cuenta existente
-    //    2 - cuenta no soportada
-    //    3 - cliente ya tiene cuenta de ese tipo
-    //    4 - cuenta creada exitosamente
+    @Autowired
+    private Transaccion transaccion;
+
     public Cuenta darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, CuentaAlreadyExistException {
         // Crear una nueva cuenta y asignar valores desde cuentaDto
         Cuenta cuenta = new Cuenta();
@@ -37,7 +32,7 @@ public class CuentaService {
         cuenta.setMoneda(cuentaDto.getMoneda());
 
         String dniTitular = cuentaDto.getTitular();
-        // Obtener el titular desde el clienteDao
+
         Cliente titular = clienteService.buscarClientePorDni(dniTitular);
         cuenta.setTitular(titular);
 
@@ -81,40 +76,14 @@ public class CuentaService {
         }
     }
 
-    public void actualizarBalanceTransferencia(Cuenta cuentaOrigen, Cuenta cuentaDestino, double monto, double comision){
-        cuentaOrigen.setBalance(cuentaOrigen.getBalance() - monto - comision);
-        cuentaDestino.setBalance(cuentaDestino.getBalance() + monto);
-
-        cuentaDao.update(cuentaOrigen);
-        cuentaDao.update(cuentaDestino);
-
-        Cliente clienteOrigen = cuentaOrigen.getTitular();
-        Cliente clienteDestino = cuentaDestino.getTitular();
-
-        actualizarCuentaEnCliente(clienteOrigen, cuentaOrigen);
-        actualizarCuentaEnCliente(clienteDestino, cuentaDestino);
-    }
-
-    public void actualizarBalanceDeposito(Cuenta cuenta, double monto, double comision){
-        double nuevoBalance = cuenta.getBalance() + monto - comision;
-        cuenta.setBalance(nuevoBalance);
+    public void actualizarBalance(Cuenta cuenta, double monto, double comision, TipoMovimiento movimiento){
+        cuenta.setBalance(transaccion.calcularNuevoBalance(cuenta.getBalance(), monto, comision, movimiento));
 
         cuentaDao.update(cuenta);
 
-        Cliente cliente = cuenta.getTitular();
+        Cliente clienteOrigen = cuenta.getTitular();
 
-        actualizarCuentaEnCliente(cliente, cuenta);
-    }
-
-    public void actualizarBalanceRetiro(Cuenta cuenta, double monto, double comision) {
-        double nuevoBalance = cuenta.getBalance() - monto - comision;
-        cuenta.setBalance(nuevoBalance);
-
-        cuentaDao.update(cuenta);
-
-        Cliente cliente = cuenta.getTitular();
-
-        actualizarCuentaEnCliente(cliente, cuenta);
+        actualizarCuentaEnCliente(clienteOrigen, cuenta);
     }
 
     private void actualizarCuentaEnCliente(Cliente cliente, Cuenta cuentaActualizada) {
