@@ -27,21 +27,14 @@ public class CuentaService {
 
     public Cuenta darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, CuentaAlreadyExistException {
         // Crear una nueva cuenta y asignar valores desde cuentaDto
-        Cuenta cuenta = new Cuenta();
-        cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
-        cuenta.setMoneda(cuentaDto.getMoneda());
-
-        String dniTitular = cuentaDto.getTitular();
-
-        Cliente titular = clienteService.buscarClientePorDni(dniTitular);
-        cuenta.setTitular(titular);
+        Cuenta cuenta = settearTitular(cuentaDto);
 
         // Verificar si la cuenta ya existe
         if (cuentaDao.find(cuenta.getTitular().getDni()) != null) {
             throw new NotPosibleException("El cliente ya posee una cuenta.");
         }
 
-        if (titular.tieneCuenta(cuenta.getTipoCuenta(), cuenta.getMoneda())) {
+        if (cuenta.getTitular().tieneCuenta(cuenta.getTipoCuenta(), cuenta.getMoneda())) {
             throw new CuentaAlreadyExistException("El cliente ya posee una cuenta de ese tipo y moneda");
         }
 
@@ -50,10 +43,23 @@ public class CuentaService {
         }
 
         // Agregar la cuenta al cliente
-        clienteService.agregarCuenta(cuenta, Long.parseLong(dniTitular));
+        clienteService.agregarCuenta(cuenta, cuenta.getTitular().getDni());
 
         // Guardar la cuenta en la base de datos
         cuentaDao.save(cuenta);
+
+        return cuenta;
+    }
+
+    private Cuenta settearTitular(CuentaDto cuentaDto) throws ClienteDoesntExistException {
+        Cuenta cuenta = new Cuenta();
+        cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
+        cuenta.setMoneda(cuentaDto.getMoneda());
+
+        String dniTitular = cuentaDto.getTitular();
+
+        Cliente titular = clienteService.buscarClientePorDni(dniTitular);
+        cuenta.setTitular(titular);
 
         return cuenta;
     }

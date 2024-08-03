@@ -8,12 +8,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.ClienteDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
+import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.ClienteService;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.CuentaService;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,10 +26,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 
 public class ClienteServiceTest {
     @Mock
     private ClienteDao clienteDao;
+
+    @Mock
+    private CuentaDao cuentaDao;
 
     @Mock
     private CuentaService cuentaService;
@@ -150,5 +157,41 @@ public class ClienteServiceTest {
         });
 
         assertEquals("No existe el cliente con DNI " + dni + ".", thrown.getMessage());
+    }
+
+//PUT
+
+    //@Test
+    //public void testActualizarClienteExitoso() throws ClienteDoesntExistException {
+
+    @Test
+    public void testActualizarClienteNoExiste() throws ClienteDoesntExistException {
+        String dniAntiguo = "12345678";
+        ClienteDto clienteDto = new ClienteDto();
+
+        when(clienteDao.find(dniAntiguo)).thenReturn(null);
+
+        ClienteDoesntExistException thrown = assertThrows(
+                ClienteDoesntExistException.class,
+                () -> clienteService.actualizarCliente(dniAntiguo, clienteDto)
+        );
+        assertEquals("No existe el cliente con DNI 12345678.", thrown.getMessage());
+    }
+
+    @Test
+    public void testActualizarClienteErrorCuentaService() throws ClienteDoesntExistException {
+        String dniAntiguo = "12345678";
+        ClienteDto clienteDto = new ClienteDto();
+        Cliente clienteExistente = new Cliente();
+        clienteExistente.setFechaNacimiento("2005-01-03");
+        clienteExistente.setFechaAlta(LocalDate.now());
+
+        when(clienteDao.find(dniAntiguo)).thenReturn(clienteExistente);
+        doThrow(new RuntimeException()).when(cuentaService).actualizarTitularCuenta(any(Cliente.class), eq(dniAntiguo));
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> clienteService.actualizarCliente(dniAntiguo, clienteDto)
+        );
     }
 }

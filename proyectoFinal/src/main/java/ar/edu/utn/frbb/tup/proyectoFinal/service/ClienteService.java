@@ -81,6 +81,7 @@ public class ClienteService {
 
         cuentaService.actualizarTitularCuenta(clienteActualizado, dniAntiguo);
 
+
         clienteDao.update(clienteActualizado);
         clienteDao.delete(Long.parseLong(dniAntiguo));
     }
