@@ -39,13 +39,12 @@ public class DepositoService {
         if (!cuenta.getMoneda().equals(depositoDto.getMoneda())) {
             throw new NotPosibleException("Las monedas de las cuentas no coinciden");
         }
-
-        RespuestaTransaccionDto respuestaTransaccionDto = new RespuestaTransaccionDto();
-
-        return realizarDepositoYActualizarBalance(cuenta, depositoDto, respuestaTransaccionDto);
+        return realizarDepositoYActualizarBalance(cuenta, depositoDto);
     }
 
-    private RespuestaTransaccionDto realizarDepositoYActualizarBalance(Cuenta cuenta, DepositoDto depositoDto, RespuestaTransaccionDto respuestaDepositoDto) throws NotPosibleException {
+    private RespuestaTransaccionDto realizarDepositoYActualizarBalance(Cuenta cuenta, DepositoDto depositoDto) throws NotPosibleException {
+        RespuestaTransaccionDto respuestaDepositoDto = new RespuestaTransaccionDto();
+
         Deposito deposito = toDeposito(depositoDto);
 
         double monto = Double.parseDouble(depositoDto.getMonto());
