@@ -1,4 +1,4 @@
-package ar.edu.utn.frbb.tup.proyectoFinal;
+package ar.edu.utn.frbb.tup.proyectoFinal.transaccionesTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,18 +40,18 @@ public class DepositoServiceTest {
     }
 
     @Test
-    public void testRealizarDepositoConCuentaExistenteYMonedaCorrecta() throws Exception, CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
+    public void testRealizarDepositoConCuentaExistenteYMonedaCorrecta() throws CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
         DepositoDto depositoDto = new DepositoDto();
-        depositoDto.setCuenta("123456789");
+        depositoDto.setCuenta("45889159");
         depositoDto.setMonto("100.0");
         depositoDto.setMoneda(TipoMoneda.PESOS);
 
         Cuenta cuenta = new Cuenta();
-        cuenta.setNumeroCuenta(123456789L);
+        cuenta.setNumeroCuenta(45889159L);
         cuenta.setMoneda(TipoMoneda.PESOS);
         cuenta.setBalance(500.0);
 
-        when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuenta);
+        when(cuentaDao.findByNumeroCuenta(45889159L)).thenReturn(cuenta);
         when(transaccion.calcularComision(depositoDto)).thenReturn(2.0);
 
         RespuestaTransaccionDto respuesta = depositoService.realizarDeposito(depositoDto);
@@ -64,9 +64,9 @@ public class DepositoServiceTest {
     @Test
     public void testRealizarDepositoConCuentaNoExistente() {
         DepositoDto depositoDto = new DepositoDto();
-        depositoDto.setCuenta("123456789");
+        depositoDto.setCuenta("45889159");
 
-        when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(null);
+        when(cuentaDao.findByNumeroCuenta(45889159L)).thenReturn(null);
 
         // Ejecutar y verificar que se lanza la excepción correspondiente
         assertThrows(CuentaDoesntExistException.class, () -> {
@@ -77,14 +77,14 @@ public class DepositoServiceTest {
     @Test
     public void testRealizarDepositoConMonedaIncorrecta() {
         DepositoDto depositoDto = new DepositoDto();
-        depositoDto.setCuenta("123456789");
+        depositoDto.setCuenta("45889159");
         depositoDto.setMoneda(TipoMoneda.DOLARES);
 
         Cuenta cuenta = new Cuenta();
-        cuenta.setNumeroCuenta(123456789L);
+        cuenta.setNumeroCuenta(45889159L);
         cuenta.setMoneda(TipoMoneda.PESOS);
 
-        when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuenta);
+        when(cuentaDao.findByNumeroCuenta(45889159L)).thenReturn(cuenta);
 
         // Ejecutar y verificar que se lanza la excepción correspondiente
         assertThrows(NotPosibleException.class, () -> {

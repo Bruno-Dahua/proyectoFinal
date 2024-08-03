@@ -1,4 +1,4 @@
-package ar.edu.utn.frbb.tup.proyectoFinal;
+package ar.edu.utn.frbb.tup.proyectoFinal.transaccionesTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,8 +36,7 @@ public class HistorialServiceTest {
 
     @Test
     public void testObtenerHistorialCuentaExistente() throws NotPosibleException {
-        // Datos de prueba
-        long numeroCuenta = 123456789;
+        long numeroCuenta = 45889159L;
         Cuenta cuenta = new Cuenta();
         cuenta.setNumeroCuenta(numeroCuenta);
         Set<Transaccion> transacciones = new HashSet<>();
@@ -50,26 +49,21 @@ public class HistorialServiceTest {
         transacciones.add(transaccion);
         cuenta.setHistorialTransacciones(transacciones);
 
-        // Configurar comportamiento del mock
         when(cuentaDao.findByNumeroCuenta(numeroCuenta)).thenReturn(cuenta);
 
-        // Ejecutar el método a probar
         RespuestaHistorialDto respuesta = historialService.obtenerHistorial(numeroCuenta);
 
-        // Verificar el resultado
         assertEquals(numeroCuenta, respuesta.getNumeroCuenta());
         assertEquals(1, respuesta.getHistorialTransacciones().size());
     }
 
     @Test
     public void testObtenerHistorialCuentaNoExistente() {
-        // Datos de prueba
-        long numeroCuenta = 123456789;
+        long numeroCuenta = 45889159L;
 
-        // Configurar comportamiento del mock
         when(cuentaDao.findByNumeroCuenta(numeroCuenta)).thenReturn(null);
 
-        // Ejecutar y verificar que se lanza la excepción
+        // Ejecutar y verificar que se lanza la excepción correspondiente
         assertThrows(NotPosibleException.class, () -> {
             historialService.obtenerHistorial(numeroCuenta);
         });

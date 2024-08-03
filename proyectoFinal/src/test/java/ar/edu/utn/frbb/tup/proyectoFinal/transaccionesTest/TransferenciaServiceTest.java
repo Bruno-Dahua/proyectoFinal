@@ -1,4 +1,4 @@
-package ar.edu.utn.frbb.tup.proyectoFinal;
+package ar.edu.utn.frbb.tup.proyectoFinal.transaccionesTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,12 +53,12 @@ public class TransferenciaServiceTest {
         transferenciaDto.setMonto("100.0");
         transferenciaDto.setMoneda(TipoMoneda.PESOS);
 
-        // Crear ClienteDto y Cliente para cuentaOrigen
+        // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
         clienteDtoOrigen.setBanco("Banco A");
         Cliente clienteOrigen = new Cliente(clienteDtoOrigen);
 
-        // Crear ClienteDto y Cliente para cuentaDestino
+        // Creo el ClienteDto y Cliente para cuentaDestino
         ClienteDto clienteDtoDestino = new ClienteDto();
         clienteDtoDestino.setBanco("Banco A");
         Cliente clienteDestino = new Cliente(clienteDtoDestino);
@@ -78,10 +78,8 @@ public class TransferenciaServiceTest {
         when(cuentaDao.findByNumeroCuenta(987654321L)).thenReturn(cuentaDestino);
         when(transaccion.calcularComision(transferenciaDto)).thenReturn(2.0);
 
-        // Ejecutar el método a probar
         RespuestaTransaccionDto respuesta = transferenciaService.realizarTransferencia(transferenciaDto);
 
-        // Verificar el resultado
         assertEquals("EXITOSA", respuesta.getEstado());
         verify(cuentaService).actualizarBalance(cuentaOrigen, 100.0, 2.0, TipoMovimiento.TRANSFERENCIA_SALIDA);
         verify(cuentaService).actualizarBalance(cuentaDestino, 100.0, 2.0, TipoMovimiento.TRANSFERENCIA_ENTRADA);
@@ -92,13 +90,12 @@ public class TransferenciaServiceTest {
 
     @Test
     public void testRealizarTransferenciaConCuentaOrigenNoExistente() {
-        // Datos de prueba
         TransferenciaDto transferenciaDto = new TransferenciaDto();
         transferenciaDto.setCuentaOrigen("123456789");
 
         when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(null);
 
-        // Ejecutar y verificar que se lanza la excepción
+        // Ejecutar y verificar que se lanza la excepción correspondiente
         assertThrows(CuentaDoesntExistException.class, () -> {
             transferenciaService.realizarTransferencia(transferenciaDto);
         });
@@ -106,7 +103,6 @@ public class TransferenciaServiceTest {
 
     @Test
     public void testRealizarTransferenciaConCuentaDestinoNoExistente() {
-        // Datos de prueba
         TransferenciaDto transferenciaDto = new TransferenciaDto();
         transferenciaDto.setCuentaOrigen("123456789");
         transferenciaDto.setCuentaDestino("987654321");
@@ -117,7 +113,7 @@ public class TransferenciaServiceTest {
         when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuentaOrigen);
         when(cuentaDao.findByNumeroCuenta(987654321L)).thenReturn(null);
 
-        // Ejecutar y verificar que se lanza la excepción
+        // Ejecutar y verificar que se lanza la excepción correspondiente
         assertThrows(CuentaDoesntExistException.class, () -> {
             transferenciaService.realizarTransferencia(transferenciaDto);
         });
@@ -125,7 +121,6 @@ public class TransferenciaServiceTest {
 
     @Test
     public void testRealizarTransferenciaConMonedasDistintas() {
-        // Datos de prueba
         TransferenciaDto transferenciaDto = new TransferenciaDto();
         transferenciaDto.setCuentaOrigen("123456789");
         transferenciaDto.setCuentaDestino("987654321");
@@ -142,27 +137,26 @@ public class TransferenciaServiceTest {
         when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuentaOrigen);
         when(cuentaDao.findByNumeroCuenta(987654321L)).thenReturn(cuentaDestino);
 
-        // Ejecutar y verificar que se lanza la excepción
+        // Ejecutar y verificar que se lanza la excepción correspondiente
         assertThrows(NotPosibleException.class, () -> {
             transferenciaService.realizarTransferencia(transferenciaDto);
         });
     }
 
     @Test
-    public void testRealizarTransferenciaConSaldoInsuficiente() throws Exception, CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
-        // Datos de prueba
+    public void testRealizarTransferenciaConSaldoInsuficiente() throws CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
         TransferenciaDto transferenciaDto = new TransferenciaDto();
         transferenciaDto.setCuentaOrigen("123456789");
         transferenciaDto.setCuentaDestino("987654321");
         transferenciaDto.setMonto("600.0");
         transferenciaDto.setMoneda(TipoMoneda.PESOS);
 
-        // Crear ClienteDto y Cliente para cuentaOrigen
+        // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
         clienteDtoOrigen.setBanco("Banco A");
         Cliente clienteOrigen = new Cliente(clienteDtoOrigen);
 
-        // Crear ClienteDto y Cliente para cuentaDestino
+        // Creo el ClienteDto y Cliente para cuentaDestino
         ClienteDto clienteDtoDestino = new ClienteDto();
         clienteDtoDestino.setBanco("Banco A");
         Cliente clienteDestino = new Cliente(clienteDtoDestino);
@@ -181,31 +175,28 @@ public class TransferenciaServiceTest {
         when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuentaOrigen);
         when(cuentaDao.findByNumeroCuenta(987654321L)).thenReturn(cuentaDestino);
 
-        // Ejecutar el método a probar
         RespuestaTransaccionDto respuesta = transferenciaService.realizarTransferencia(transferenciaDto);
 
-        // Verificar el resultado
         assertEquals("FALLIDA", respuesta.getEstado());
         assertEquals("Saldo insuficiente para realizar la transferencia.", respuesta.getMensaje());
     }
 
     @Test
-    public void testRealizarTransferenciaEntreBancosDiferentesConServicioBanelco() throws Exception, CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
-        // Datos de prueba
+    public void testRealizarTransferenciaEntreBancosDiferentesConServicioBanelco() throws CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
         TransferenciaDto transferenciaDto = new TransferenciaDto();
         transferenciaDto.setCuentaOrigen("123456789");
-        transferenciaDto.setCuentaDestino("987654321");
+        transferenciaDto.setCuentaDestino("987654322"); // Cuenta destino par (aprueba transferencia)
         transferenciaDto.setMonto("100.0");
         transferenciaDto.setMoneda(TipoMoneda.PESOS);
 
-        // Crear ClienteDto y Cliente para cuentaOrigen
+        // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
         clienteDtoOrigen.setBanco("Banco A");
         Cliente clienteOrigen = new Cliente(clienteDtoOrigen);
 
-        // Crear ClienteDto y Cliente para cuentaDestino
+        // Creo el ClienteDto y Cliente para cuentaDestino
         ClienteDto clienteDtoDestino = new ClienteDto();
-        clienteDtoDestino.setBanco("Banco A");
+        clienteDtoDestino.setBanco("Banco B"); //Bancos diferentes
         Cliente clienteDestino = new Cliente(clienteDtoDestino);
 
         Cuenta cuentaOrigen = new Cuenta();
@@ -215,42 +206,39 @@ public class TransferenciaServiceTest {
         cuentaOrigen.setTitular(clienteOrigen);
 
         Cuenta cuentaDestino = new Cuenta();
-        cuentaDestino.setNumeroCuenta(987654321L);
+        cuentaDestino.setNumeroCuenta(987654322L);
         cuentaDestino.setMoneda(TipoMoneda.PESOS);
         cuentaDestino.setTitular(clienteDestino);
 
         when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuentaOrigen);
-        when(cuentaDao.findByNumeroCuenta(987654321L)).thenReturn(cuentaDestino);
+        when(cuentaDao.findByNumeroCuenta(987654322L)).thenReturn(cuentaDestino);
         when(banelcoService.servicioDeBanelco(transferenciaDto)).thenReturn(true);
-        when(transaccion.calcularComision(transferenciaDto)).thenReturn(2.0);
+        when(transaccion.calcularComision(transferenciaDto)).thenReturn(0.0);
 
-        // Ejecutar el método a probar
         RespuestaTransaccionDto respuesta = transferenciaService.realizarTransferencia(transferenciaDto);
 
-        // Verificar el resultado
         assertEquals("EXITOSA", respuesta.getEstado());
-        verify(cuentaService).actualizarBalance(cuentaOrigen, 100.0, 2.0, TipoMovimiento.TRANSFERENCIA_SALIDA);
-        verify(cuentaService).actualizarBalance(cuentaDestino, 100.0, 2.0, TipoMovimiento.TRANSFERENCIA_ENTRADA);
+        verify(cuentaService).actualizarBalance(cuentaOrigen, 100.0, 0.0, TipoMovimiento.TRANSFERENCIA_SALIDA);
+        verify(cuentaService).actualizarBalance(cuentaDestino, 100.0, 0.0, TipoMovimiento.TRANSFERENCIA_ENTRADA);
         verify(transaccion, times(2)).save(any(Cuenta.class), any(Transferencia.class), any(TipoMovimiento.class), anyString());
         verify(cuentaDao).update(cuentaOrigen);
         verify(cuentaDao).update(cuentaDestino);
     }
 
     @Test
-    public void testRealizarTransferenciaEntreBancosDiferentesSinServicioBanelco() throws Exception, CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
-        // Datos de prueba
+    public void testRealizarTransferenciaEntreBancosDiferentesSinServicioBanelco() throws CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
         TransferenciaDto transferenciaDto = new TransferenciaDto();
         transferenciaDto.setCuentaOrigen("123456789");
-        transferenciaDto.setCuentaDestino("987654321"); // Cuenta destino impar
+        transferenciaDto.setCuentaDestino("987654321"); // Cuenta destino impar (desaprueba transferencia)
         transferenciaDto.setMonto("100.0");
         transferenciaDto.setMoneda(TipoMoneda.PESOS);
 
-        // Crear ClienteDto y Cliente para cuentaOrigen
+        // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
         clienteDtoOrigen.setBanco("Banco A");
         Cliente clienteOrigen = new Cliente(clienteDtoOrigen);
 
-        // Crear ClienteDto y Cliente para cuentaDestino
+        // Creo el ClienteDto y Cliente para cuentaDestino
         ClienteDto clienteDtoDestino = new ClienteDto();
         clienteDtoDestino.setBanco("Banco B"); // Bancos diferentes
         Cliente clienteDestino = new Cliente(clienteDtoDestino);
@@ -268,12 +256,10 @@ public class TransferenciaServiceTest {
 
         when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuentaOrigen);
         when(cuentaDao.findByNumeroCuenta(987654321L)).thenReturn(cuentaDestino);
-        when(banelcoService.servicioDeBanelco(transferenciaDto)).thenReturn(false); // Asegúrate de que devuelva false
+        when(banelcoService.servicioDeBanelco(transferenciaDto)).thenReturn(false);
 
-        // Ejecutar el método a probar
         RespuestaTransaccionDto respuesta = transferenciaService.realizarTransferencia(transferenciaDto);
 
-        // Verificar el resultado
         assertEquals("FALLIDA", respuesta.getEstado());
         assertEquals("No es posible realizar la transferencia, los bancos son diferentes.", respuesta.getMensaje());
     }

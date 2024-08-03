@@ -1,4 +1,4 @@
-package ar.edu.utn.frbb.tup.proyectoFinal;
+package ar.edu.utn.frbb.tup.proyectoFinal.transaccionesTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,17 +43,17 @@ public class RetiroServiceTest {
     @Test
     public void testRealizarRetiroConCuentaExistenteYMonedaCorrectaYSaldoSuficiente() throws Exception, CuentaDoesntExistException, InputErrorException, ClienteDoesntExistException, NotPosibleException {
         RetiroDto retiroDto = new RetiroDto();
-        retiroDto.setCuenta("123456789");
+        retiroDto.setCuenta("45889159");
         retiroDto.setMonto("100.0");
         retiroDto.setMoneda(TipoMoneda.PESOS);
 
         Cuenta cuenta = new Cuenta();
-        cuenta.setNumeroCuenta(123456789L);
+        cuenta.setNumeroCuenta(45889159L);
         cuenta.setMoneda(TipoMoneda.PESOS);
         cuenta.setBalance(500.0);
 
-        when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuenta);
-        when(transaccion.calcularComision(retiroDto)).thenReturn(2.0);
+        when(cuentaDao.findByNumeroCuenta(45889159L)).thenReturn(cuenta);
+        when(transaccion.calcularComision(retiroDto)).thenReturn(0.0);
 
         RespuestaTransaccionDto respuesta = retiroService.realizarRetiro(retiroDto);
 
@@ -65,9 +65,9 @@ public class RetiroServiceTest {
     @Test
     public void testRealizarRetiroConCuentaNoExistente() {
         RetiroDto retiroDto = new RetiroDto();
-        retiroDto.setCuenta("123456789");
+        retiroDto.setCuenta("45889159");
 
-        when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(null);
+        when(cuentaDao.findByNumeroCuenta(45889159L)).thenReturn(null);
 
         // Ejecutar y verificar que se lanza la excepción correspondiente
         assertThrows(CuentaDoesntExistException.class, () -> {
@@ -78,14 +78,14 @@ public class RetiroServiceTest {
     @Test
     public void testRealizarRetiroConMonedaIncorrecta() {
         RetiroDto retiroDto = new RetiroDto();
-        retiroDto.setCuenta("123456789");
+        retiroDto.setCuenta("45889159");
         retiroDto.setMoneda(TipoMoneda.DOLARES);
 
         Cuenta cuenta = new Cuenta();
-        cuenta.setNumeroCuenta(123456789L);
+        cuenta.setNumeroCuenta(45889159L);
         cuenta.setMoneda(TipoMoneda.PESOS);
 
-        when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuenta);
+        when(cuentaDao.findByNumeroCuenta(45889159L)).thenReturn(cuenta);
 
         // Ejecutar y verificar que se lanza la excepción correspondiente
         assertThrows(NotPosibleException.class, () -> {
@@ -96,16 +96,16 @@ public class RetiroServiceTest {
     @Test
     public void testRealizarRetiroConSaldoInsuficiente() throws Exception, CuentaDoesntExistException, InputErrorException, ClienteDoesntExistException, NotPosibleException {
         RetiroDto retiroDto = new RetiroDto();
-        retiroDto.setCuenta("123456789");
+        retiroDto.setCuenta("45889159");
         retiroDto.setMonto("600.0");
         retiroDto.setMoneda(TipoMoneda.PESOS);
 
         Cuenta cuenta = new Cuenta();
-        cuenta.setNumeroCuenta(123456789L);
+        cuenta.setNumeroCuenta(45889159L);
         cuenta.setMoneda(TipoMoneda.PESOS);
         cuenta.setBalance(500.0);
 
-        when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(cuenta);
+        when(cuentaDao.findByNumeroCuenta(45889159L)).thenReturn(cuenta);
 
         RespuestaTransaccionDto respuesta = retiroService.realizarRetiro(retiroDto);
 
