@@ -39,12 +39,12 @@ public class RetiroService {
             throw new NotPosibleException("Las monedas de las cuentas no coinciden");
         }
 
-        RespuestaTransaccionDto respuestaTransaccionDto = new RespuestaTransaccionDto();
-
-        return realizarRetiroYActualizarBalance(cuenta, retiroDto, respuestaTransaccionDto);
+        return realizarRetiroYActualizarBalance(cuenta, retiroDto);
     }
 
-    private RespuestaTransaccionDto realizarRetiroYActualizarBalance(Cuenta cuenta, RetiroDto retiroDto, RespuestaTransaccionDto respuestaRetiroDto) throws NotPosibleException {
+    private RespuestaTransaccionDto realizarRetiroYActualizarBalance(Cuenta cuenta, RetiroDto retiroDto) throws NotPosibleException {
+        RespuestaTransaccionDto respuestaRetiroDto = new RespuestaTransaccionDto();
+
         Retiro retiro = toRetiro(retiroDto);
 
         double monto = Double.parseDouble(retiroDto.getMonto());

@@ -46,14 +46,14 @@ public class TransferenciaService {
             throw new NotPosibleException("Las monedas de las cuentas no coinciden.");
         }
 
-        RespuestaTransaccionDto respuestaTransferenciaDto = new RespuestaTransaccionDto();
 
         if ((cuentaOrigen.getTitular().getBanco()).equals(cuentaDestino.getTitular().getBanco())) {
-            return realizarTransferenciaYActualizarBalance(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
+            return realizarTransferenciaYActualizarBalance(transferenciaDto, cuentaOrigen, cuentaDestino);
         } else {
             if (banelcoService.servicioDeBanelco(transferenciaDto)) {
-                return realizarTransferenciaYActualizarBalance(transferenciaDto, cuentaOrigen, cuentaDestino, respuestaTransferenciaDto);
+                return realizarTransferenciaYActualizarBalance(transferenciaDto, cuentaOrigen, cuentaDestino);
             } else {
+                RespuestaTransaccionDto respuestaTransferenciaDto = new RespuestaTransaccionDto();
                 respuestaTransferenciaDto.setEstado("FALLIDA");
                 respuestaTransferenciaDto.setMensaje("No es posible realizar la transferencia, los bancos son diferentes.");
                 return respuestaTransferenciaDto;
@@ -62,7 +62,9 @@ public class TransferenciaService {
     }
 
 
-    private RespuestaTransaccionDto realizarTransferenciaYActualizarBalance(TransferenciaDto transferenciaDto, Cuenta cuentaOrigen, Cuenta cuentaDestino, RespuestaTransaccionDto respuestaTransferenciaDto) {
+    private RespuestaTransaccionDto realizarTransferenciaYActualizarBalance(TransferenciaDto transferenciaDto, Cuenta cuentaOrigen, Cuenta cuentaDestino) {
+        RespuestaTransaccionDto respuestaTransferenciaDto = new RespuestaTransaccionDto();
+
         Transferencia transferencia = toTransferencia(transferenciaDto);
 
         if (cuentaOrigen.getBalance() >= Double.parseDouble(transferenciaDto.getMonto())) {
@@ -99,6 +101,4 @@ public class TransferenciaService {
         transferencia.setMoneda(transferenciaDto.getMoneda().toString());
         return transferencia;
     }
-
-
 }
