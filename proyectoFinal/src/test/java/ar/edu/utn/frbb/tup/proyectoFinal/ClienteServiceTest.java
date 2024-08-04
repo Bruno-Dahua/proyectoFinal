@@ -8,10 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.ClienteDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteAlreadyExistException;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.ClienteService;
@@ -24,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Set;
 
 public class ClienteServiceTest {
     @Mock
@@ -165,11 +163,22 @@ public class ClienteServiceTest {
 
 //PUT
 
-    //@Test
-    //public void testActualizarClienteExitoso() throws ClienteDoesntExistException {
+    @Test
+    public void actualizarCliente() throws ClienteDoesntExistException, NotPosibleException {
+        long dniAntiguo = 38944251;
+
+        when(clienteDao.find(dniAntiguo)).thenReturn(cliente);
+        when(cuentaDao.getCuentasByCliente(dniAntiguo)).thenReturn(new HashSet<>());
+
+        clienteService.actualizarCliente(dniAntiguo, clienteDto);
+
+        verify(cuentaService, times(0)).actualizarTitularCuenta(any(Cliente.class), eq(dniAntiguo));
+        verify(clienteDao, times(1)).delete(dniAntiguo);
+        verify(clienteDao, times(1)).update(any(Cliente.class));
+    }
 
     @Test
-    public void testActualizarClienteNoExiste() throws ClienteDoesntExistException {
+    public void testActualizarClienteNoExiste() {
         long dniAntiguo = 12345678L;
         ClienteDto clienteDto = new ClienteDto();
 
@@ -183,7 +192,7 @@ public class ClienteServiceTest {
     }
 
     @Test
-    public void testActualizarClienteErrorCuentaService() throws ClienteDoesntExistException {
+    public void testActualizarClienteErrorCuentaService() {
         long dniAntiguo = 12345678L;
         ClienteDto clienteDto = new ClienteDto();
         Cliente clienteExistente = new Cliente();

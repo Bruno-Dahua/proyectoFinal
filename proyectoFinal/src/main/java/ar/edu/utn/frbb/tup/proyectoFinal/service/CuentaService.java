@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CuentaService {
@@ -61,6 +62,22 @@ public class CuentaService {
         cuenta.setTitular(titular);
 
         return cuenta;
+    }
+
+    public Set<Cuenta> buscarCuentasPorDni(long dni) {
+        Set<Cuenta> cuentasCliente = cuentaDao.getCuentasByCliente(dni);
+
+        Set<Cuenta> cuentas = cuentasCliente.stream()
+                .map(cuenta -> {
+                    Cuenta copia = new Cuenta();
+                    copia.setNumeroCuenta(cuenta.getNumeroCuenta());
+                    copia.setTipoCuenta(cuenta.getTipoCuenta());
+                    copia.setMoneda(cuenta.getMoneda());
+                    copia.setBalance(cuenta.getBalance());
+                    return copia;
+                })
+                .collect(Collectors.toSet());
+        return cuentas;
     }
 
     public Cuenta buscarCuentaPorNumeroCuenta(long numeroCuenta) throws NotPosibleException {

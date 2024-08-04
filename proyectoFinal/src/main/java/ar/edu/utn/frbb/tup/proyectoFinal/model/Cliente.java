@@ -15,7 +15,7 @@ public class Cliente extends Persona{
     private LocalDate fechaAlta;
 
     @JsonBackReference
-    private Set<Cuenta> cuentas;
+    private Set<Cuenta> cuentas = new HashSet<>();
 
     public Cliente() {
         super();

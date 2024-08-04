@@ -1,15 +1,13 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Cuenta {
     private long numeroCuenta;
     private LocalDateTime fechaCreacion;

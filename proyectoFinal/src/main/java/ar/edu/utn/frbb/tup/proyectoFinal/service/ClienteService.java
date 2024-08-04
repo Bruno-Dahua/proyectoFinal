@@ -13,17 +13,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
 public class ClienteService {
 
     @Autowired
-    ClienteDao clienteDao;
-    @Autowired
-    private CuentaService cuentaService;
+    private ClienteDao clienteDao;
+
     @Autowired
     private CuentaDao cuentaDao;
+
+    @Autowired
+    private CuentaService cuentaService;
 
     public ClienteService(ClienteDao clienteDao) {
         this.clienteDao = clienteDao;
@@ -79,6 +82,11 @@ public class ClienteService {
 
         Cliente clienteActualizado = toCliente(clienteDto);
         clienteActualizado.setFechaAlta(clienteExistente.getFechaAlta());
+
+        Set<Cuenta> cuentasCliente = cuentaDao.getCuentasByCliente(dniAntiguo);
+        if (cuentasCliente == null) {
+            cuentasCliente = new HashSet<>();
+        }
 
         cuentaService.actualizarTitularCuenta(clienteActualizado, dniAntiguo);
 
