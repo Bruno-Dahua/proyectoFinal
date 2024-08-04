@@ -12,6 +12,7 @@ import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Service
@@ -33,7 +34,7 @@ public class ClienteService {
 
         Cliente cliente = new Cliente(clienteDto);
 
-        if (clienteDao.find(cliente.getDniString()) != null) {
+        if (clienteDao.find(cliente.getDni()) != null) {
             throw new NotPosibleException("El cliente con DNI " + cliente.getDni() + " ya existe.");
         }
 
@@ -45,8 +46,8 @@ public class ClienteService {
 
     }
 
-    public void agregarCuenta(Cuenta cuenta, long dniTitular) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException {
-        Cliente titular = buscarClientePorDni(String.valueOf(dniTitular));
+    public void agregarCuenta(Cuenta cuenta, long dniTitular) throws ClienteDoesntExistException {
+        Cliente titular = buscarClientePorDni(dniTitular);
         cuenta.setTitular(titular);
 
         titular.addCuenta(cuenta);
@@ -54,7 +55,7 @@ public class ClienteService {
         clienteDao.save(titular);
     }
 
-    public Cliente buscarClientePorDni(String dni) throws ClienteDoesntExistException {
+    public Cliente buscarClientePorDni(Long dni) throws ClienteDoesntExistException {
         Cliente cliente = clienteDao.find(dni);
 
         if (cliente == null) {
@@ -65,7 +66,7 @@ public class ClienteService {
     }
 
 
-    public void actualizarCliente(String dniAntiguo, ClienteDto clienteDto) throws ClienteDoesntExistException, NotPosibleException {
+    public void actualizarCliente(Long dniAntiguo, ClienteDto clienteDto) throws ClienteDoesntExistException, NotPosibleException {
         Cliente clienteExistente = clienteDao.find(dniAntiguo);
 
         if (clienteExistente == null) {
@@ -83,16 +84,16 @@ public class ClienteService {
 
 
         clienteDao.update(clienteActualizado);
-        clienteDao.delete(Long.parseLong(dniAntiguo));
+        clienteDao.delete(dniAntiguo);
     }
 
 
-    public boolean eliminarCliente(String dni) throws ClienteDoesntExistException {
+    public boolean eliminarCliente(Long dni) throws ClienteDoesntExistException {
         Cliente clienteEliminar = clienteDao.find(dni);
-        if (clienteEliminar == null) { //Si no existe el cliente
+        if (clienteEliminar == null) {
             throw new ClienteDoesntExistException("No existe el cliente con DNI " + dni + ".");
         }else {
-            return clienteDao.delete(Long.parseLong(dni));
+            return clienteDao.delete(dni);
         }
     }
 
@@ -102,7 +103,7 @@ public class ClienteService {
         Cliente cliente = new Cliente();
         cliente.setNombre(clienteDto.getNombre());
         cliente.setApellido(clienteDto.getApellido());
-        cliente.setFechaNacimiento(clienteDto.getFechaNacimiento());
+        cliente.setFechaNacimiento(LocalDate.parse(clienteDto.getFechaNacimiento()));
         cliente.setBanco(clienteDto.getBanco());
         cliente.setTipoPersona(clienteDto.getTipoPersona());
         cliente.setDni(clienteDto.getDni());

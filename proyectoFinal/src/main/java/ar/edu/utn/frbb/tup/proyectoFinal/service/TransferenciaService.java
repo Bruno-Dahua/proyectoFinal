@@ -32,12 +32,12 @@ public class TransferenciaService {
 
     public RespuestaTransaccionDto realizarTransferencia(TransferenciaDto transferenciaDto) throws ClienteDoesntExistException, NotPosibleException, CuentaDoesntExistException {
 
-        Cuenta cuentaOrigen = cuentaDao.findByNumeroCuenta(Long.parseLong(transferenciaDto.getCuentaOrigen()));
+        Cuenta cuentaOrigen = cuentaDao.findByNumeroCuenta(transferenciaDto.getCuentaOrigen());
         if (cuentaOrigen == null) {
             throw new CuentaDoesntExistException("La cuenta " + transferenciaDto.getCuentaOrigen() + " (cuenta de origen) no existe.");
         }
 
-        Cuenta cuentaDestino = cuentaDao.findByNumeroCuenta(Long.parseLong(transferenciaDto.getCuentaDestino()));
+        Cuenta cuentaDestino = cuentaDao.findByNumeroCuenta(transferenciaDto.getCuentaDestino());
         if (cuentaDestino == null) {
             throw new CuentaDoesntExistException("La cuenta " + transferenciaDto.getCuentaDestino() + " (cuenta de destino) no existe.");
         }
@@ -67,12 +67,11 @@ public class TransferenciaService {
 
         Transferencia transferencia = toTransferencia(transferenciaDto);
 
-        if (cuentaOrigen.getBalance() >= Double.parseDouble(transferenciaDto.getMonto())) {
-            double monto = Double.parseDouble(transferenciaDto.getMonto());
+        if (cuentaOrigen.getBalance() >= transferenciaDto.getMonto()) {
             double comision = transaccion.calcularComision(transferenciaDto);
 
-            cuentaService.actualizarBalance(cuentaOrigen, monto, comision, TipoMovimiento.TRANSFERENCIA_SALIDA);
-            cuentaService.actualizarBalance(cuentaDestino, monto, comision, TipoMovimiento.TRANSFERENCIA_ENTRADA);
+            cuentaService.actualizarBalance(cuentaOrigen, transferenciaDto.getMonto(), comision, TipoMovimiento.TRANSFERENCIA_SALIDA);
+            cuentaService.actualizarBalance(cuentaDestino, transferenciaDto.getMonto(), comision, TipoMovimiento.TRANSFERENCIA_ENTRADA);
 
             // Creo y agrego las transacciones al historial
             transaccion.save(cuentaOrigen, transferencia, TipoMovimiento.TRANSFERENCIA_SALIDA, "Transferencia a cuenta " + cuentaDestino.getNumeroCuenta());
@@ -84,7 +83,7 @@ public class TransferenciaService {
 
             // Preparo una respuestaDto
             respuestaTransferenciaDto.setEstado("EXITOSA");
-            respuestaTransferenciaDto.setMensaje("Se realizó la transferencia exitosamente. Número de transferencia: " + transferencia.getNumeroTransaccion() + ". Realizado el " + transferencia.getFecha() + ". Saldo actual: " + (cuentaOrigen.getBalance() > 0 ? (transferenciaDto.getMoneda() == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuentaOrigen.getBalance() : "Usted tiene una deuda con el Banco."));
+            respuestaTransferenciaDto.setMensaje("Se realizó la transferencia exitosamente. Número de transferencia: " + transferencia.getNumeroTransaccion() + ". Realizado el " + transferencia.getFecha() + ". Saldo actual: " + (cuentaOrigen.getBalance() > 0 ? (TipoMoneda.valueOf(transferenciaDto.getMoneda()) == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuentaOrigen.getBalance() : "Usted tiene una deuda con el Banco."));
             return respuestaTransferenciaDto;
         } else {
             respuestaTransferenciaDto.setEstado("FALLIDA");
@@ -95,7 +94,7 @@ public class TransferenciaService {
 
     private Transferencia toTransferencia(TransferenciaDto transferenciaDto) {
         Transferencia transferencia = new Transferencia();
-        transferencia.setMonto(Double.parseDouble(transferenciaDto.getMonto()));
+        transferencia.setMonto(transferenciaDto.getMonto());
         transferencia.setCuentaOrigen(transferenciaDto.getCuentaOrigen());
         transferencia.setCuentaDestino(transferenciaDto.getCuentaDestino());
         transferencia.setMoneda(transferenciaDto.getMoneda().toString());

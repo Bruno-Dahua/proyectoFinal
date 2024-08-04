@@ -6,8 +6,8 @@ import java.util.Random;
 
 public class Transferencia {
     private long numeroTransaccion;
-    private String cuentaOrigen;
-    private String cuentaDestino;
+    private long cuentaOrigen;
+    private long cuentaDestino;
     private double monto;
     private String moneda;
     private LocalDate fecha;
@@ -25,19 +25,19 @@ public class Transferencia {
         this.numeroTransaccion = numeroTransaccion;
     }
 
-    public String getCuentaOrigen() {
+    public long getCuentaOrigen() {
         return cuentaOrigen;
     }
 
-    public void setCuentaOrigen(String cuentaOrigen) {
+    public void setCuentaOrigen(long cuentaOrigen) {
         this.cuentaOrigen = cuentaOrigen;
     }
 
-    public String getCuentaDestino() {
+    public long getCuentaDestino() {
         return cuentaDestino;
     }
 
-    public void setCuentaDestino(String cuentaDestino) {
+    public void setCuentaDestino(long cuentaDestino) {
         this.cuentaDestino = cuentaDestino;
     }
 

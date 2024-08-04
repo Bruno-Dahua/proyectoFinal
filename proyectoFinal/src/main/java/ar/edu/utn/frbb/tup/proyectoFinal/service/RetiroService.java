@@ -30,7 +30,7 @@ public class RetiroService {
     private Transaccion transaccion;
 
     public RespuestaTransaccionDto realizarRetiro(RetiroDto retiroDto) throws NotPosibleException, ClienteDoesntExistException, InputErrorException, CuentaDoesntExistException {
-        Cuenta cuenta = cuentaDao.findByNumeroCuenta(Long.parseLong(retiroDto.getCuenta()));
+        Cuenta cuenta = cuentaDao.findByNumeroCuenta(retiroDto.getCuenta());
 
         if (cuenta == null) {
             throw new CuentaDoesntExistException("La cuenta " + retiroDto.getCuenta() + " no existe.");
@@ -47,16 +47,15 @@ public class RetiroService {
 
         Retiro retiro = toRetiro(retiroDto);
 
-        double monto = Double.parseDouble(retiroDto.getMonto());
         double comision = transaccion.calcularComision(retiroDto);
-        if (cuenta.getBalance() >= monto) {
+        if (cuenta.getBalance() >= retiroDto.getMonto()) {
 
-            cuentaService.actualizarBalance(cuenta, monto, comision, TipoMovimiento.RETIRO);
+            cuentaService.actualizarBalance(cuenta, retiroDto.getMonto(), comision, TipoMovimiento.RETIRO);
 
             transaccion.save(cuenta, retiro, TipoMovimiento.RETIRO, "Retiro de la cuenta " + cuenta.getNumeroCuenta() + ".");
 
             respuestaRetiroDto.setEstado("EXITOSA");
-            respuestaRetiroDto.setMensaje("Se realizó el retiro exitosamente. Número de transaccion: " + retiro.getNumeroTransaccion() + ". Realizado el " + retiro.getFecha() + ". Saldo actual: " + (cuenta.getBalance() > 0 ? (retiroDto.getMoneda() == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuenta.getBalance() : "Usted tiene una deuda con el Banco."));
+            respuestaRetiroDto.setMensaje("Se realizó el retiro exitosamente. Número de transaccion: " + retiro.getNumeroTransaccion() + ". Realizado el " + retiro.getFecha() + ". Saldo actual: " + (cuenta.getBalance() > 0 ? (TipoMoneda.valueOf(retiroDto.getMoneda()) == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuenta.getBalance() : "Usted tiene una deuda con el Banco."));
 
             return respuestaRetiroDto;
         }else {
@@ -69,7 +68,7 @@ public class RetiroService {
     private Retiro toRetiro(RetiroDto retiroDto) {
         Retiro retiro = new Retiro();
         retiro.setCuenta(retiroDto.getCuenta());
-        retiro.setMonto(Double.parseDouble(retiroDto.getMonto()));
+        retiro.setMonto(retiroDto.getMonto());
         retiro.setMoneda(retiroDto.getMoneda().toString());
         return retiro;
     }

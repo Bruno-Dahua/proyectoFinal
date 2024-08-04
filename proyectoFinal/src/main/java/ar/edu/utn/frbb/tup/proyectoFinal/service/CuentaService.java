@@ -38,7 +38,8 @@ public class CuentaService {
             throw new CuentaAlreadyExistException("El cliente ya posee una cuenta de ese tipo y moneda");
         }
 
-        if (cuentaDto.getTipoCuenta() == TipoCuenta.CUENTA_CORRIENTE && cuentaDto.getMoneda() == TipoMoneda.DOLARES) {
+        if (TipoCuenta.valueOf(cuentaDto.getTipoCuenta()) == TipoCuenta.CUENTA_CORRIENTE
+                && TipoMoneda.valueOf(cuentaDto.getMoneda()) == TipoMoneda.DOLARES) {
             throw new NotPosibleException("No es posible crear una CUENTA CORRIENTE en DOLARES");
         }
 
@@ -53,12 +54,10 @@ public class CuentaService {
 
     private Cuenta settearTitular(CuentaDto cuentaDto) throws ClienteDoesntExistException {
         Cuenta cuenta = new Cuenta();
-        cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
-        cuenta.setMoneda(cuentaDto.getMoneda());
+        cuenta.setTipoCuenta(TipoCuenta.valueOf(cuentaDto.getTipoCuenta()));
+        cuenta.setMoneda(TipoMoneda.valueOf(cuentaDto.getMoneda()));
 
-        String dniTitular = cuentaDto.getTitular();
-
-        Cliente titular = clienteService.buscarClientePorDni(dniTitular);
+        Cliente titular = clienteService.buscarClientePorDni(cuentaDto.getTitular());
         cuenta.setTitular(titular);
 
         return cuenta;
@@ -72,8 +71,8 @@ public class CuentaService {
         }
     }
 
-    public void actualizarTitularCuenta(Cliente clienteActualizado, String dniAntiguo){
-        Set<Cuenta> cuentasCliente = cuentaDao.getCuentasByCliente(Long.parseLong(dniAntiguo));
+    public void actualizarTitularCuenta(Cliente clienteActualizado, Long dniAntiguo){
+        Set<Cuenta> cuentasCliente = cuentaDao.getCuentasByCliente(dniAntiguo);
 
         for (Cuenta c : cuentasCliente){
             c.setTitular(clienteActualizado);

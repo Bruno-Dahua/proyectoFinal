@@ -94,15 +94,15 @@ public class Transaccion {
     }
 
     public double calcularComision(DepositoDto depositoDto) {
-        return calcularComision(depositoDto.getMoneda(), Double.parseDouble(depositoDto.getMonto()));
+        return calcularComision(TipoMoneda.valueOf(depositoDto.getMoneda()), depositoDto.getMonto());
     }
 
     public double calcularComision(TransferenciaDto transferenciaDto) {
-        return calcularComision(transferenciaDto.getMoneda(), Double.parseDouble(transferenciaDto.getMonto()));
+        return calcularComision(TipoMoneda.valueOf(transferenciaDto.getMoneda()), transferenciaDto.getMonto());
     }
 
     public double calcularComision(RetiroDto retiroDto) {
-        return calcularComision(retiroDto.getMoneda(), Double.parseDouble(retiroDto.getMonto()));
+        return calcularComision(TipoMoneda.valueOf(retiroDto.getMoneda()), retiroDto.getMonto());
     }
 
     private double calcularComision(TipoMoneda moneda, double monto) {

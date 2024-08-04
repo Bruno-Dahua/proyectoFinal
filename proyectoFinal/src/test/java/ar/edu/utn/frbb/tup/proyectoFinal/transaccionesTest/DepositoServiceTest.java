@@ -42,9 +42,9 @@ public class DepositoServiceTest {
     @Test
     public void testRealizarDepositoConCuentaExistenteYMonedaCorrecta() throws CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
         DepositoDto depositoDto = new DepositoDto();
-        depositoDto.setCuenta("45889159");
-        depositoDto.setMonto("100.0");
-        depositoDto.setMoneda(TipoMoneda.PESOS);
+        depositoDto.setCuenta(45889159L);
+        depositoDto.setMonto(100.0);
+        depositoDto.setMoneda(String.valueOf(TipoMoneda.PESOS));
 
         Cuenta cuenta = new Cuenta();
         cuenta.setNumeroCuenta(45889159L);
@@ -64,7 +64,7 @@ public class DepositoServiceTest {
     @Test
     public void testRealizarDepositoConCuentaNoExistente() {
         DepositoDto depositoDto = new DepositoDto();
-        depositoDto.setCuenta("45889159");
+        depositoDto.setCuenta(45889159L);
 
         when(cuentaDao.findByNumeroCuenta(45889159L)).thenReturn(null);
 
@@ -77,8 +77,8 @@ public class DepositoServiceTest {
     @Test
     public void testRealizarDepositoConMonedaIncorrecta() {
         DepositoDto depositoDto = new DepositoDto();
-        depositoDto.setCuenta("45889159");
-        depositoDto.setMoneda(TipoMoneda.DOLARES);
+        depositoDto.setCuenta(45889159L);
+        depositoDto.setMoneda(String.valueOf(TipoMoneda.DOLARES));
 
         Cuenta cuenta = new Cuenta();
         cuenta.setNumeroCuenta(45889159L);

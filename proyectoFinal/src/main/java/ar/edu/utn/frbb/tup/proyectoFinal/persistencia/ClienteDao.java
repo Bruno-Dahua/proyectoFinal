@@ -15,10 +15,10 @@ public class ClienteDao extends AbstractBaseDao {
     @Autowired
     CuentaDao cuentaDao;
 
-    public Cliente find(String dni) throws ClienteDoesntExistException {
+    public Cliente find(long dni)  {
         for (Object object : getInMemoryDatabase().values()) {
             ClienteEntity clienteEntity = (ClienteEntity) object;
-            if (clienteEntity.getDni().equals(dni)) {
+            if (clienteEntity.getDni() == (dni)) {
                 return clienteEntity.toCliente();
             }
         }

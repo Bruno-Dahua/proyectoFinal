@@ -7,31 +7,31 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CuentaDto {
 
-    private TipoCuenta tipoCuenta;
-    private String titular;
-    private TipoMoneda moneda;
+    private String tipoCuenta;
+    private long titular;
+    private String moneda;
 
-    public TipoCuenta getTipoCuenta() {
+    public String getTipoCuenta() {
         return tipoCuenta;
     }
 
-    public void setTipoCuenta(TipoCuenta tipoCuenta) {
+    public void setTipoCuenta(String tipoCuenta) {
         this.tipoCuenta = tipoCuenta;
     }
 
-    public String getTitular() {
+    public long getTitular() {
         return titular;
     }
 
-    public void setTitular(String titular) {
+    public void setTitular(long titular) {
         this.titular = titular;
     }
 
-    public TipoMoneda getMoneda() {
+    public String getMoneda() {
         return moneda;
     }
 
-    public void setMoneda(TipoMoneda moneda) {
+    public void setMoneda(String moneda) {
         this.moneda = moneda;
     }
 }

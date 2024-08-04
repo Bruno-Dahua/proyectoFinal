@@ -43,9 +43,9 @@ public class RetiroServiceTest {
     @Test
     public void testRealizarRetiroConCuentaExistenteYMonedaCorrectaYSaldoSuficiente() throws Exception, CuentaDoesntExistException, InputErrorException, ClienteDoesntExistException, NotPosibleException {
         RetiroDto retiroDto = new RetiroDto();
-        retiroDto.setCuenta("45889159");
-        retiroDto.setMonto("100.0");
-        retiroDto.setMoneda(TipoMoneda.PESOS);
+        retiroDto.setCuenta(45889159L);
+        retiroDto.setMonto(100.0);
+        retiroDto.setMoneda(String.valueOf(TipoMoneda.PESOS));
 
         Cuenta cuenta = new Cuenta();
         cuenta.setNumeroCuenta(45889159L);
@@ -65,7 +65,7 @@ public class RetiroServiceTest {
     @Test
     public void testRealizarRetiroConCuentaNoExistente() {
         RetiroDto retiroDto = new RetiroDto();
-        retiroDto.setCuenta("45889159");
+        retiroDto.setCuenta(45889159L);
 
         when(cuentaDao.findByNumeroCuenta(45889159L)).thenReturn(null);
 
@@ -78,8 +78,8 @@ public class RetiroServiceTest {
     @Test
     public void testRealizarRetiroConMonedaIncorrecta() {
         RetiroDto retiroDto = new RetiroDto();
-        retiroDto.setCuenta("45889159");
-        retiroDto.setMoneda(TipoMoneda.DOLARES);
+        retiroDto.setCuenta(45889159L);
+        retiroDto.setMoneda(String.valueOf(TipoMoneda.DOLARES));
 
         Cuenta cuenta = new Cuenta();
         cuenta.setNumeroCuenta(45889159L);
@@ -96,9 +96,9 @@ public class RetiroServiceTest {
     @Test
     public void testRealizarRetiroConSaldoInsuficiente() throws Exception, CuentaDoesntExistException, InputErrorException, ClienteDoesntExistException, NotPosibleException {
         RetiroDto retiroDto = new RetiroDto();
-        retiroDto.setCuenta("45889159");
-        retiroDto.setMonto("600.0");
-        retiroDto.setMoneda(TipoMoneda.PESOS);
+        retiroDto.setCuenta(45889159L);
+        retiroDto.setMonto(600.0);
+        retiroDto.setMoneda(String.valueOf(TipoMoneda.PESOS));
 
         Cuenta cuenta = new Cuenta();
         cuenta.setNumeroCuenta(45889159L);

@@ -7,10 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.ClienteDto;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
@@ -41,86 +38,92 @@ public class ClienteServiceTest {
     @InjectMocks
     private ClienteService clienteService;
 
+    private ClienteDto clienteDto;
+    private Cliente cliente;
+    private Cuenta cuenta;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        clienteDto = new ClienteDto();
+        clienteDto.setDni(458889159L);
+        clienteDto.setNombre("Bruno");
+        clienteDto.setApellido("Dahua");
+        clienteDto.setFechaNacimiento(String.valueOf(LocalDate.of(2005, 01, 03)));
+        clienteDto.setTipoPersona("PERSONA_FISICA");
+
+        cliente = new Cliente();
+        cliente.setDni(18458131L);
+        cliente.setNombre("Diana");
+        cliente.setApellido("Juan");
+        cliente.setFechaNacimiento(LocalDate.parse("1967-12-08"));
+        cliente.setTipoPersona(String.valueOf(TipoPersona.PERSONA_FISICA));
+
+        cuenta = new Cuenta();
+        cuenta.setTipoCuenta(TipoCuenta.CUENTA_CORRIENTE);
+        cuenta.setMoneda(TipoMoneda.PESOS);
+        cuenta.setTitular(cliente);
+
     }
 
 //POST
 
     @Test
-    public void testDarDeAltaCliente_Success() throws Exception, ClienteDoesntExistException, NotPosibleException {
-        //Creo un cliente
-        ClienteDto clienteDto = new ClienteDto();
-        clienteDto.setDni("45889159");
-        clienteDto.setNombre("Bruno Martin");
-        clienteDto.setApellido("Dahua");
-        clienteDto.setFechaNacimiento("2005-01-03");
-        clienteDto.setTipoPersona(String.valueOf(TipoPersona.PERSONA_FISICA));
-        clienteDto.setBanco("Provincia");
+    public void testDarDeAltaCliente_Success() throws ClienteDoesntExistException, NotPosibleException {
+        // Lo busco. No lo encuentro, retorno null.
+        when(clienteDao.find(45889159L)).thenReturn(null);
 
-        //Lo busco. No lo encuentro, retorno null.
-        when(clienteDao.find("45889159L")).thenReturn(null);
-
-        //Simulo el retorno de la llamada a la base de datos.
+        // Simulo el retorno de la llamada a la base de datos.
         clienteService.darDeAltaCliente(clienteDto);
 
-        //Verifico que se haya llamado una vez.
+        // Verifico que se haya llamado una vez.
         verify(clienteDao, times(1)).save(any(Cliente.class));
     }
 
     @Test
     public void testDarDeAltaCliente_ClienteExists() throws ClienteDoesntExistException {
-        // Creo un cliente
-        ClienteDto clienteDto = new ClienteDto();
-        clienteDto.setDni("45889159");
-        clienteDto.setNombre("Bruno Martin");
-        clienteDto.setApellido("Dahua");
-        clienteDto.setFechaNacimiento("2005-01-03");
-        clienteDto.setTipoPersona(String.valueOf(TipoPersona.PERSONA_FISICA));
-        clienteDto.setBanco("Provincia");
+        // Modifica los datos del clienteDto para esta prueba específica
+        clienteDto.setDni(45889159L);
 
         // Lo busco. Lo encuentro, retorno el cliente.
-        when(clienteDao.find("45889159L")).thenReturn(new Cliente());
+        when(clienteDao.find(45889159L)).thenReturn(cliente);
 
         assertThrows(NotPosibleException.class, () -> clienteService.darDeAltaCliente(clienteDto));
     }
 
     @Test
     public void testDarDeAltaCliente_UnderageClient() throws ClienteDoesntExistException {
-        //Creo un cliente.
-        ClienteDto clienteDto = new ClienteDto();
-        clienteDto.setDni("45889159");
-        clienteDto.setNombre("Bruno Martin");
-        clienteDto.setApellido("Dahua");
+        // Modifica los datos del clienteDto para esta prueba específica
+        clienteDto.setDni(45889159L);
         clienteDto.setFechaNacimiento("2023-01-03");
-        clienteDto.setTipoPersona(String.valueOf(TipoPersona.PERSONA_FISICA));
-        clienteDto.setBanco("Provincia");
 
-        //Lo busco. No lo encuentro, retorno null.
-        when(clienteDao.find("45889159L")).thenReturn(null);
+        // Lo busco. No lo encuentro, retorno null.
+        when(clienteDao.find(45889159L)).thenReturn(null);
 
         assertThrows(NotPosibleException.class, () -> clienteService.darDeAltaCliente(clienteDto));
     }
+
 
 //GET
 
     @Test
     void testBuscarClientePorDni_ClienteExiste() throws ClienteDoesntExistException {
-        String dni = "45889159";
-        Cliente cliente = new Cliente();
-        cliente.setDni(dni);
+        long dni = cliente.getDni();
+
         when(clienteDao.find(dni)).thenReturn(cliente);
 
         Cliente result = clienteService.buscarClientePorDni(dni);
 
         assertNotNull(result);
-        assertEquals(Long.parseLong(dni), result.getDni());
+        assertEquals(dni, result.getDni());
     }
+
 
     @Test
     void testBuscarClientePorDni_ClienteNoExiste() throws ClienteDoesntExistException {
-        String dni = "45889159L";
+        long dni = 45889159L;
+
         when(clienteDao.find(dni)).thenReturn(null);
 
         ClienteDoesntExistException thrown = assertThrows(ClienteDoesntExistException.class, () -> {
@@ -129,26 +132,26 @@ public class ClienteServiceTest {
         assertEquals("No existe el cliente con DNI " + dni + ".", thrown.getMessage());
     }
 
+
 //DELETE
 
     @Test
     void testEliminarCliente() throws ClienteDoesntExistException {
-        String dni = "45889159";
-        Cliente clienteExistente = new Cliente();
-        clienteExistente.setDni(dni);
+        long dni = cliente.getDni();
 
-        when(clienteDao.find(dni)).thenReturn(clienteExistente);
-        when(clienteDao.delete(Long.parseLong(dni))).thenReturn(true);
+        when(clienteDao.find(dni)).thenReturn(cliente);
+        when(clienteDao.delete(dni)).thenReturn(true);
 
         clienteService.eliminarCliente(dni);
 
         verify(clienteDao).find(dni);
-        verify(clienteDao).delete(Long.parseLong(dni));
+        verify(clienteDao).delete(dni);
     }
+
 
     @Test
     void testEliminarCliente_NoExiste() throws ClienteDoesntExistException {
-        String dni = "45889159";
+        long dni = 45889159L;
 
         when(clienteDao.find(dni)).thenReturn(null);
 
@@ -159,6 +162,7 @@ public class ClienteServiceTest {
         assertEquals("No existe el cliente con DNI " + dni + ".", thrown.getMessage());
     }
 
+
 //PUT
 
     //@Test
@@ -166,7 +170,7 @@ public class ClienteServiceTest {
 
     @Test
     public void testActualizarClienteNoExiste() throws ClienteDoesntExistException {
-        String dniAntiguo = "12345678";
+        long dniAntiguo = 12345678L;
         ClienteDto clienteDto = new ClienteDto();
 
         when(clienteDao.find(dniAntiguo)).thenReturn(null);
@@ -180,10 +184,10 @@ public class ClienteServiceTest {
 
     @Test
     public void testActualizarClienteErrorCuentaService() throws ClienteDoesntExistException {
-        String dniAntiguo = "12345678";
+        long dniAntiguo = 12345678L;
         ClienteDto clienteDto = new ClienteDto();
         Cliente clienteExistente = new Cliente();
-        clienteExistente.setFechaNacimiento("2005-01-03");
+        clienteExistente.setFechaNacimiento(LocalDate.parse("2005-01-03"));
         clienteExistente.setFechaAlta(LocalDate.now());
 
         when(clienteDao.find(dniAntiguo)).thenReturn(clienteExistente);

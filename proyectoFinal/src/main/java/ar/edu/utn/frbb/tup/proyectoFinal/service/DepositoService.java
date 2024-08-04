@@ -31,7 +31,7 @@ public class DepositoService {
     private Transaccion transaccion;
 
     public RespuestaTransaccionDto realizarDeposito(DepositoDto depositoDto) throws ClienteDoesntExistException, CuentaDoesntExistException, NotPosibleException {
-        Cuenta cuenta = cuentaDao.findByNumeroCuenta(Long.parseLong(depositoDto.getCuenta()));
+        Cuenta cuenta = cuentaDao.findByNumeroCuenta(depositoDto.getCuenta());
 
         if (cuenta == null) {
             throw new CuentaDoesntExistException("La cuenta " + depositoDto.getCuenta() + " no existe.");
@@ -47,15 +47,14 @@ public class DepositoService {
 
         Deposito deposito = toDeposito(depositoDto);
 
-        double monto = Double.parseDouble(depositoDto.getMonto());
         double comision = transaccion.calcularComision(depositoDto);
 
-        cuentaService.actualizarBalance(cuenta, monto, comision, TipoMovimiento.DEPOSITO);
+        cuentaService.actualizarBalance(cuenta, depositoDto.getMonto(), comision, TipoMovimiento.DEPOSITO);
 
         transaccion.save(cuenta, deposito, TipoMovimiento.DEPOSITO, "Deposito a la cuenta " + cuenta.getNumeroCuenta() + ".");
 
         respuestaDepositoDto.setEstado("EXITOSA");
-        respuestaDepositoDto.setMensaje("Se realizó el deposito exitosamente. Número de transaccion: " + deposito.getNumeroTransaccion() + ". Realizado el " + deposito.getFecha() + ". Saldo actual: " + (cuenta.getBalance() > 0 ? (depositoDto.getMoneda() == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuenta.getBalance() : "Usted tiene una deuda con el Banco."));
+        respuestaDepositoDto.setMensaje("Se realizó el deposito exitosamente. Número de transaccion: " + deposito.getNumeroTransaccion() + ". Realizado el " + deposito.getFecha() + ". Saldo actual: " + (cuenta.getBalance() > 0 ? (TipoMoneda.valueOf(depositoDto.getMoneda())) == TipoMoneda.PESOS ? "ARG $ " : "USD $ " + cuenta.getBalance() : "Usted tiene una deuda con el Banco."));
 
         return respuestaDepositoDto;
     }
@@ -63,7 +62,7 @@ public class DepositoService {
     private Deposito toDeposito(DepositoDto depositoDto) {
         Deposito deposito = new Deposito();
         deposito.setCuenta(depositoDto.getCuenta());
-        deposito.setMonto(Double.parseDouble(depositoDto.getMonto()));
+        deposito.setMonto(depositoDto.getMonto());
         deposito.setMoneda(depositoDto.getMoneda().toString());
         return deposito;
     }

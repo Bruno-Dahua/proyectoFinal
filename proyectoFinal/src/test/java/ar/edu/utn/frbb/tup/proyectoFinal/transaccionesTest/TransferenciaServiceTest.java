@@ -48,10 +48,10 @@ public class TransferenciaServiceTest {
     public void testRealizarTransferenciaConCuentasExistentesYMismasMonedasYSuficienteSaldo() throws Exception, CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
         // Datos de prueba
         TransferenciaDto transferenciaDto = new TransferenciaDto();
-        transferenciaDto.setCuentaOrigen("123456789");
-        transferenciaDto.setCuentaDestino("987654321");
-        transferenciaDto.setMonto("100.0");
-        transferenciaDto.setMoneda(TipoMoneda.PESOS);
+        transferenciaDto.setCuentaOrigen(123456789L);
+        transferenciaDto.setCuentaDestino(987654321L);
+        transferenciaDto.setMonto(100.0);
+        transferenciaDto.setMoneda(String.valueOf(TipoMoneda.PESOS));
 
         // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
@@ -91,7 +91,7 @@ public class TransferenciaServiceTest {
     @Test
     public void testRealizarTransferenciaConCuentaOrigenNoExistente() {
         TransferenciaDto transferenciaDto = new TransferenciaDto();
-        transferenciaDto.setCuentaOrigen("123456789");
+        transferenciaDto.setCuentaOrigen(123456789L);
 
         when(cuentaDao.findByNumeroCuenta(123456789L)).thenReturn(null);
 
@@ -104,8 +104,8 @@ public class TransferenciaServiceTest {
     @Test
     public void testRealizarTransferenciaConCuentaDestinoNoExistente() {
         TransferenciaDto transferenciaDto = new TransferenciaDto();
-        transferenciaDto.setCuentaOrigen("123456789");
-        transferenciaDto.setCuentaDestino("987654321");
+        transferenciaDto.setCuentaOrigen(123456789L);
+        transferenciaDto.setCuentaDestino(987654321L);
 
         Cuenta cuentaOrigen = new Cuenta();
         cuentaOrigen.setNumeroCuenta(123456789L);
@@ -122,9 +122,9 @@ public class TransferenciaServiceTest {
     @Test
     public void testRealizarTransferenciaConMonedasDistintas() {
         TransferenciaDto transferenciaDto = new TransferenciaDto();
-        transferenciaDto.setCuentaOrigen("123456789");
-        transferenciaDto.setCuentaDestino("987654321");
-        transferenciaDto.setMoneda(TipoMoneda.DOLARES);
+        transferenciaDto.setCuentaOrigen(123456789L);
+        transferenciaDto.setCuentaDestino(987654321L);
+        transferenciaDto.setMoneda(String.valueOf(TipoMoneda.DOLARES));
 
         Cuenta cuentaOrigen = new Cuenta();
         cuentaOrigen.setNumeroCuenta(123456789L);
@@ -146,10 +146,10 @@ public class TransferenciaServiceTest {
     @Test
     public void testRealizarTransferenciaConSaldoInsuficiente() throws CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
         TransferenciaDto transferenciaDto = new TransferenciaDto();
-        transferenciaDto.setCuentaOrigen("123456789");
-        transferenciaDto.setCuentaDestino("987654321");
-        transferenciaDto.setMonto("600.0");
-        transferenciaDto.setMoneda(TipoMoneda.PESOS);
+        transferenciaDto.setCuentaOrigen(123456789L);
+        transferenciaDto.setCuentaDestino(987654321L);
+        transferenciaDto.setMonto(600.0);
+        transferenciaDto.setMoneda(String.valueOf(TipoMoneda.PESOS));
 
         // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
@@ -184,10 +184,10 @@ public class TransferenciaServiceTest {
     @Test
     public void testRealizarTransferenciaEntreBancosDiferentesConServicioBanelco() throws CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
         TransferenciaDto transferenciaDto = new TransferenciaDto();
-        transferenciaDto.setCuentaOrigen("123456789");
-        transferenciaDto.setCuentaDestino("987654322"); // Cuenta destino par (aprueba transferencia)
-        transferenciaDto.setMonto("100.0");
-        transferenciaDto.setMoneda(TipoMoneda.PESOS);
+        transferenciaDto.setCuentaOrigen(123456789L);
+        transferenciaDto.setCuentaDestino(987654322L); // Cuenta destino par (aprueba transferencia)
+        transferenciaDto.setMonto(100.0);
+        transferenciaDto.setMoneda(String.valueOf(TipoMoneda.PESOS));
 
         // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
@@ -228,10 +228,10 @@ public class TransferenciaServiceTest {
     @Test
     public void testRealizarTransferenciaEntreBancosDiferentesSinServicioBanelco() throws CuentaDoesntExistException, ClienteDoesntExistException, NotPosibleException {
         TransferenciaDto transferenciaDto = new TransferenciaDto();
-        transferenciaDto.setCuentaOrigen("123456789");
-        transferenciaDto.setCuentaDestino("987654321"); // Cuenta destino impar (desaprueba transferencia)
-        transferenciaDto.setMonto("100.0");
-        transferenciaDto.setMoneda(TipoMoneda.PESOS);
+        transferenciaDto.setCuentaOrigen(123456789L);
+        transferenciaDto.setCuentaDestino(987654321L); // Cuenta destino impar (desaprueba transferencia)
+        transferenciaDto.setMonto(100.0);
+        transferenciaDto.setMoneda(String.valueOf(TipoMoneda.PESOS));
 
         // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();

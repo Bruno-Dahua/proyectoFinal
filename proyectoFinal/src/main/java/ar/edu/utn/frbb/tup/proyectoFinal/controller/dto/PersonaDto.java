@@ -1,9 +1,13 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 
+import org.springframework.cglib.core.Local;
+
+import java.time.LocalDate;
+
 public class PersonaDto {
     private String nombre;
     private String apellido;
-    private String dni;
+    private long dni;
     private String fechaNacimiento;
 
     public String getNombre() {
@@ -22,11 +26,11 @@ public class PersonaDto {
         this.apellido = apellido;
     }
 
-    public String getDni() {
+    public long getDni() {
         return dni;
     }
 
-    public void setDni(String  dni) {
+    public void setDni(long  dni) {
         this.dni = dni;
     }
 

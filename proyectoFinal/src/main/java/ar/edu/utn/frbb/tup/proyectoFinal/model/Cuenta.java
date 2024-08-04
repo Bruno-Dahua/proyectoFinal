@@ -93,10 +93,6 @@ public class Cuenta {
         this.numeroCuenta = numeroCuenta;
     }
 
-    /*public void forzaDebitoDeCuenta(int i) {
-        this.balance = this.balance - i;
-    }*/
-
     public long getNumeroCuenta() {
         return numeroCuenta;
     }

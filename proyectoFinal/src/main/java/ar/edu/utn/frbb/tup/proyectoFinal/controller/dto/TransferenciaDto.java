@@ -3,40 +3,40 @@ package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
 
 public class TransferenciaDto {
-    private String cuentaOrigen;
-    private String cuentaDestino;
-    private String monto;
-    private TipoMoneda moneda;
+    private long cuentaOrigen;
+    private long cuentaDestino;
+    private double monto;
+    private String moneda;
 
-    public String getCuentaOrigen() {
+    public long getCuentaOrigen() {
         return cuentaOrigen;
     }
 
-    public void setCuentaOrigen(String cuentaOrigen) {
+    public void setCuentaOrigen(long cuentaOrigen) {
         this.cuentaOrigen = cuentaOrigen;
     }
 
-    public String getCuentaDestino() {
+    public long getCuentaDestino() {
         return cuentaDestino;
     }
 
-    public void setCuentaDestino(String cuentaDestino) {
+    public void setCuentaDestino(long cuentaDestino) {
         this.cuentaDestino = cuentaDestino;
     }
 
-    public String getMonto() {
+    public double getMonto() {
         return monto;
     }
 
-    public void setMonto(String monto) {
+    public void setMonto(double monto) {
         this.monto = monto;
     }
 
-    public TipoMoneda getMoneda() {
+    public String getMoneda() {
         return moneda;
     }
 
-    public void setMoneda(TipoMoneda moneda) {
+    public void setMoneda(String moneda) {
         this.moneda = moneda;
     }
 

@@ -8,11 +8,11 @@ import java.time.Period;
 public class Persona {
     private String nombre;
     private String apellido;
-    private String dni;
-    private String fechaNacimiento;
+    private long dni;
+    private LocalDate fechaNacimiento;
 
     public Persona() {}
-    public Persona(String dni, String apellido, String nombre, String fechaNacimiento) {
+    public Persona(long dni, String apellido, String nombre, LocalDate fechaNacimiento) {
         this.dni = dni;
         this.apellido = apellido;
         this.nombre = nombre;
@@ -36,30 +36,30 @@ public class Persona {
     }
 
     public long getDni() {
-        return Long.parseLong(dni);
-    }
-
-    public void setDni(String dni) {
-        this.dni = dni;
-    }
-
-    @JsonIgnore
-    public String getDniString(){
         return dni;
     }
 
+    public void setDni(long dni) {
+        this.dni = dni;
+    }
 
-    public String getFechaNacimiento() {
+//    @JsonIgnore
+//    public String getDniString(){
+//        return dni;
+//    }
+
+
+    public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(String fechaNacimiento) {
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 
     public int getEdad() {
         LocalDate fechaHoy = LocalDate.now();
-        LocalDate fechaNacimiento = LocalDate.parse(getFechaNacimiento());
+        LocalDate fechaNacimiento = getFechaNacimiento();
         Period edad = Period.between(fechaNacimiento, fechaHoy);
         return edad.getYears();
     }

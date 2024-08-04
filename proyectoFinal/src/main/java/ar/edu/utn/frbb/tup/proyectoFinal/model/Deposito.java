@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class Deposito {
     private long numeroTransaccion;
-    private String cuenta;
+    private long cuenta;
     private double monto;
     private String moneda;
     private LocalDate fecha;
@@ -23,11 +23,11 @@ public class Deposito {
         this.numeroTransaccion = numeroTransaccion;
     }
 
-    public String getCuenta() {
+    public long getCuenta() {
         return cuenta;
     }
 
-    public void setCuenta(String cuenta) {
+    public void setCuenta(long cuenta) {
         this.cuenta = cuenta;
     }
 

@@ -11,18 +11,18 @@ import java.util.List;
 
 public class ClienteEntity extends BaseEntity {
 
-    private final String dni;
+    private final Long dni;
     private final String tipoPersona;
     private final String nombre;
     private final String apellido;
     private final LocalDate fechaAlta;
-    private final String fechaNacimiento;
+    private final LocalDate fechaNacimiento;
     private final String banco;
     private List<Cuenta> cuentas;
 
     public ClienteEntity(Cliente cliente) {
         super(cliente.getDni());
-        this.dni = cliente.getDniString();
+        this.dni = cliente.getDni();
         this.tipoPersona = cliente.getTipoPersona();
         this.nombre = cliente.getNombre();
         this.apellido = cliente.getApellido();
@@ -38,7 +38,7 @@ public class ClienteEntity extends BaseEntity {
 
     public Cliente toCliente() {
         Cliente cliente = new Cliente();
-        cliente.setDni(this.getId().toString());
+        cliente.setDni(this.getId());
         cliente.setNombre(this.nombre);
         cliente.setApellido(this.apellido);
         cliente.setTipoPersona(this.tipoPersona);
@@ -52,7 +52,7 @@ public class ClienteEntity extends BaseEntity {
         return cliente;
     }
 
-    public String getDni() {
+    public Long getDni() {
         return dni;
     }
 }

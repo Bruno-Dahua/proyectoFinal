@@ -3,31 +3,31 @@ package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
 
 public class RetiroDto {
-    private String cuenta;
-    private String monto;
-    private TipoMoneda moneda;
+    private long cuenta;
+    private double monto;
+    private String moneda;
 
-    public String getCuenta() {
+    public long getCuenta() {
         return cuenta;
     }
 
-    public void setCuenta(String cuenta) {
+    public void setCuenta(long cuenta) {
         this.cuenta = cuenta;
     }
 
-    public String getMonto() {
+    public double getMonto() {
         return monto;
     }
 
-    public void setMonto(String monto) {
+    public void setMonto(double monto) {
         this.monto = monto;
     }
 
-    public TipoMoneda getMoneda() {
+    public String getMoneda() {
         return moneda;
     }
 
-    public void setMoneda(TipoMoneda moneda) {
+    public void setMoneda(String moneda) {
         this.moneda = moneda;
     }
 }
