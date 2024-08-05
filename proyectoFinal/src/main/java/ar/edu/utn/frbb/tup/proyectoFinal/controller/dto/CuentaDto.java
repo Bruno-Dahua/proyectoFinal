@@ -15,10 +15,6 @@ public class CuentaDto {
         return tipoCuenta;
     }
 
-    public void setTipoCuenta(String tipoCuenta) {
-        this.tipoCuenta = tipoCuenta;
-    }
-
     public long getTitular() {
         return titular;
     }

@@ -115,14 +115,12 @@ public class Transaccion {
     }
 
     public double calcularNuevoBalance(double balanceActual, double monto, double comision, TipoMovimiento tipo) {
-        switch (tipo) {
-            case TRANSFERENCIA_SALIDA, RETIRO:
-                return balanceActual - monto - comision;
-            case DEPOSITO, TRANSFERENCIA_ENTRADA:
-                return balanceActual + monto;
-            default:
-                throw new IllegalArgumentException("Tipo de movimiento no soportado");
-        }
+        return switch (tipo) {
+            case TRANSFERENCIA_SALIDA, RETIRO -> balanceActual - monto - comision;
+            case TRANSFERENCIA_ENTRADA -> balanceActual + monto;
+            case DEPOSITO -> balanceActual + monto - comision;
+            default -> throw new IllegalArgumentException("Tipo de movimiento no soportado");
+        };
     }
 
 }

@@ -2,13 +2,11 @@ package ar.edu.utn.frbb.tup.proyectoFinal.controller;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.CuentaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.validator.CuentaValidator;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.ClienteService;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.CuentaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -23,9 +21,6 @@ public class CuentaController {
 
     @Autowired
     private CuentaValidator cuentaValidator;
-
-    @Autowired
-    private ClienteService clienteService;
 
     //Endpoint para crear una cuenta. Con condiciones, debe existir el cliente, los datos del titular deben ser los mismos
     //y ademas el cliente no puede tener una cuenta del mismo tipo y moneda.

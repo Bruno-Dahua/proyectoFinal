@@ -6,17 +6,12 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
-import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 public class TransferenciaService {
-    @Autowired
-    private ClienteDao clienteDao;
 
     @Autowired
     private CuentaDao cuentaDao;
@@ -42,7 +37,7 @@ public class TransferenciaService {
             throw new CuentaDoesntExistException("La cuenta " + transferenciaDto.getCuentaDestino() + " (cuenta de destino) no existe.");
         }
 
-        if (!cuentaOrigen.getMoneda().equals(cuentaDestino.getMoneda()) || !cuentaOrigen.getMoneda().equals(transferenciaDto.getMoneda()) || !cuentaDestino.getMoneda().equals(transferenciaDto.getMoneda())) {
+        if (!cuentaOrigen.getMoneda().equals(cuentaDestino.getMoneda()) || !(String.valueOf(cuentaOrigen.getMoneda())).equals(transferenciaDto.getMoneda()) || !(String.valueOf(cuentaDestino.getMoneda())).equals(transferenciaDto.getMoneda())) {
             throw new NotPosibleException("Las monedas de las cuentas no coinciden.");
         }
 
@@ -97,7 +92,7 @@ public class TransferenciaService {
         transferencia.setMonto(transferenciaDto.getMonto());
         transferencia.setCuentaOrigen(transferenciaDto.getCuentaOrigen());
         transferencia.setCuentaDestino(transferenciaDto.getCuentaDestino());
-        transferencia.setMoneda(transferenciaDto.getMoneda().toString());
+        transferencia.setMoneda(transferenciaDto.getMoneda());
         return transferencia;
     }
 }

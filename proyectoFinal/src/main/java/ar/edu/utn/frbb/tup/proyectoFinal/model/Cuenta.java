@@ -1,7 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
 import com.fasterxml.jackson.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Random;
@@ -25,7 +24,7 @@ public class Cuenta {
         Random random = new Random();
         this.numeroCuenta = 1 + (Math.abs(random.nextLong()) % 99999999);
         this.fechaCreacion = LocalDateTime.now();
-        this.balance = 1000;
+        this.balance = 0;
         this.historialTransacciones = new HashSet<>();
     }
 

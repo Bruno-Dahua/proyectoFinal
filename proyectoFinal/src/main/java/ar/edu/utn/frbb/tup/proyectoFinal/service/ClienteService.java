@@ -3,15 +3,13 @@ package ar.edu.utn.frbb.tup.proyectoFinal.service;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.ClienteDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
+import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.TipoCuentaAlreadyExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -69,7 +67,7 @@ public class ClienteService {
     }
 
 
-    public void actualizarCliente(Long dniAntiguo, ClienteDto clienteDto) throws ClienteDoesntExistException, NotPosibleException {
+    public void actualizarCliente(Long dniAntiguo, ClienteDto clienteDto) throws ClienteDoesntExistException, NotPosibleException, InputErrorException {
         Cliente clienteExistente = clienteDao.find(dniAntiguo);
 
         if (clienteExistente == null) {

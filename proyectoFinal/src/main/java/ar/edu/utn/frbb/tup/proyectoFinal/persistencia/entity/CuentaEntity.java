@@ -1,7 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
-
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -34,7 +33,6 @@ public class CuentaEntity extends BaseEntity {
         cuenta.setMoneda(TipoMoneda.valueOf(this.moneda));
         cuenta.setHistorialTransacciones(this.historialTransacciones);
         cuenta.setTitular(this.titular);
-
 
         return cuenta;
     }

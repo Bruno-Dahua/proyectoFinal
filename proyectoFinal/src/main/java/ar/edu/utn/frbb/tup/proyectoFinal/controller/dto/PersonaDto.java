@@ -1,9 +1,5 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 
-import org.springframework.cglib.core.Local;
-
-import java.time.LocalDate;
-
 public class PersonaDto {
     private String nombre;
     private String apellido;

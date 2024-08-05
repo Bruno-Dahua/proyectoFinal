@@ -4,7 +4,6 @@ import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.TransferenciaDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 @Component

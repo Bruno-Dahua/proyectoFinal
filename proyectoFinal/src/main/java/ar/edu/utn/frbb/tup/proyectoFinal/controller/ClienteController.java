@@ -60,6 +60,4 @@ public class ClienteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No fue posible eliminar el cliente con DNI " + dni + ".");
         }
     }
-
-
 }

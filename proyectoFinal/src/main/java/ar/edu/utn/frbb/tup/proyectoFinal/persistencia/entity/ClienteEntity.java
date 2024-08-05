@@ -2,8 +2,6 @@ package ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,7 +44,6 @@ public class ClienteEntity extends BaseEntity {
         cliente.setFechaNacimiento(this.fechaNacimiento);
         cliente.setBanco(this.banco);
 
-        // Asignar la lista de cuentas al objeto Cliente
         cliente.setCuentas(new HashSet<>(cuentas));
 
         return cliente;

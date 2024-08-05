@@ -1,7 +1,5 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -42,12 +40,6 @@ public class Persona {
     public void setDni(long dni) {
         this.dni = dni;
     }
-
-//    @JsonIgnore
-//    public String getDniString(){
-//        return dni;
-//    }
-
 
     public LocalDate getFechaNacimiento() {
         return fechaNacimiento;

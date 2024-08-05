@@ -1,11 +1,8 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.persistencia;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoCuenta;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity.CuentaEntity;
 import org.springframework.stereotype.Component;
-
 import java.util.*;
 
 @Component

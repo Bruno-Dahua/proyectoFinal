@@ -1,6 +1,5 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.controller.dto;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoMoneda;
 
 public class DepositoDto {
     private long cuenta;

@@ -1,13 +1,9 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.persistencia;
 
 import ar.edu.utn.frbb.tup.proyectoFinal.model.Cliente;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.Cuenta;
-import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.entity.ClienteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 public class ClienteDao extends AbstractBaseDao {

@@ -1,7 +1,6 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Random;
 
 public class Transferencia {
@@ -21,20 +20,8 @@ public class Transferencia {
         return numeroTransaccion;
     }
 
-    public void setNumeroTransaccion(long numeroTransaccion) {
-        this.numeroTransaccion = numeroTransaccion;
-    }
-
-    public long getCuentaOrigen() {
-        return cuentaOrigen;
-    }
-
     public void setCuentaOrigen(long cuentaOrigen) {
         this.cuentaOrigen = cuentaOrigen;
-    }
-
-    public long getCuentaDestino() {
-        return cuentaDestino;
     }
 
     public void setCuentaDestino(long cuentaDestino) {
@@ -59,10 +46,6 @@ public class Transferencia {
 
     public LocalDate getFecha() {
         return fecha;
-    }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
     }
 }
 

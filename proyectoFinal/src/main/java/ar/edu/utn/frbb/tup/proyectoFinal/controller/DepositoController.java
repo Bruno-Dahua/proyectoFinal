@@ -9,7 +9,6 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
 import ar.edu.utn.frbb.tup.proyectoFinal.service.DepositoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

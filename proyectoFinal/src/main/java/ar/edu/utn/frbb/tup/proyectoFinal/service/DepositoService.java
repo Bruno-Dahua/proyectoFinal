@@ -6,17 +6,12 @@ import ar.edu.utn.frbb.tup.proyectoFinal.model.*;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.ClienteDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.CuentaDoesntExistException;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.NotPosibleException;
-import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 public class DepositoService {
-    @Autowired
-    private ClienteDao clienteDao;
 
     @Autowired
     private CuentaDao cuentaDao;
@@ -36,7 +31,8 @@ public class DepositoService {
         if (cuenta == null) {
             throw new CuentaDoesntExistException("La cuenta " + depositoDto.getCuenta() + " no existe.");
         }
-        if (!cuenta.getMoneda().equals(depositoDto.getMoneda())) {
+
+        if (!(String.valueOf(cuenta.getMoneda())).equals(depositoDto.getMoneda())) {
             throw new NotPosibleException("Las monedas de las cuentas no coinciden");
         }
         return realizarDepositoYActualizarBalance(cuenta, depositoDto);
@@ -54,7 +50,7 @@ public class DepositoService {
         transaccion.save(cuenta, deposito, TipoMovimiento.DEPOSITO, "Deposito a la cuenta " + cuenta.getNumeroCuenta() + ".");
 
         respuestaDepositoDto.setEstado("EXITOSA");
-        respuestaDepositoDto.setMensaje("Se realizó el deposito exitosamente. Número de transaccion: " + deposito.getNumeroTransaccion() + ". Realizado el " + deposito.getFecha() + ". Saldo actual: " + (cuenta.getBalance() > 0 ? (TipoMoneda.valueOf(depositoDto.getMoneda())) == TipoMoneda.PESOS ? "ARG $ " : "USD $ " + cuenta.getBalance() : "Usted tiene una deuda con el Banco."));
+        respuestaDepositoDto.setMensaje("Se realizó el deposito exitosamente. Número de transaccion: " + deposito.getNumeroTransaccion() + ". Realizado el " + deposito.getFecha() + ". Saldo actual: " + (cuenta.getBalance() > 0 ? ((TipoMoneda.valueOf(depositoDto.getMoneda()) == TipoMoneda.PESOS ? "ARG $ " : "USD $ ") + cuenta.getBalance()) : "Usted tiene una deuda con el Banco."));
 
         return respuestaDepositoDto;
     }
@@ -63,7 +59,7 @@ public class DepositoService {
         Deposito deposito = new Deposito();
         deposito.setCuenta(depositoDto.getCuenta());
         deposito.setMonto(depositoDto.getMonto());
-        deposito.setMoneda(depositoDto.getMoneda().toString());
+        deposito.setMoneda(depositoDto.getMoneda());
         return deposito;
     }
 }

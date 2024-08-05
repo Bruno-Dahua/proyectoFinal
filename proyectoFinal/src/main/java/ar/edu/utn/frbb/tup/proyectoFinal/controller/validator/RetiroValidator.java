@@ -1,6 +1,5 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.controller.validator;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.DepositoDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.controller.dto.RetiroDto;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
 import org.springframework.beans.factory.annotation.Autowired;

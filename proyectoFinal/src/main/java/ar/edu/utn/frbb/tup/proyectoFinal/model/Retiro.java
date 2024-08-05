@@ -19,10 +19,6 @@ public class Retiro {
         return numeroTransaccion;
     }
 
-    public void setNumeroTransaccion(long numeroTransaccion) {
-        this.numeroTransaccion = numeroTransaccion;
-    }
-
     public long getCuenta() {
         return cuenta;
     }
@@ -49,10 +45,6 @@ public class Retiro {
 
     public LocalDate getFecha() {
         return fecha;
-    }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
     }
 }
 

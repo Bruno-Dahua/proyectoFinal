@@ -11,6 +11,3 @@ public class ProyectoFinalApplication {
 	}
 
 }
-/*git add .
-git commit -m "Descripción de los cambios"
-git push*/

@@ -18,12 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HistorialController {
 
     @Autowired
-    private CuentaService cuentaService;
-
-    @Autowired
-    private CuentaDao cuentaDao;
-
-    @Autowired
     private HistorialService historialService;
 
     @GetMapping("/{numeroCuenta}/transacciones")

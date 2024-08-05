@@ -10,13 +10,15 @@ import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.ClienteDao;
 import ar.edu.utn.frbb.tup.proyectoFinal.persistencia.CuentaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class CuentaService {
-    CuentaDao cuentaDao = new CuentaDao();
+
+    @Autowired
+    private CuentaDao cuentaDao;
+
     @Autowired
     private ClienteDao clienteDao;
 
@@ -26,7 +28,7 @@ public class CuentaService {
     @Autowired
     private Transaccion transaccion;
 
-    public Cuenta darDeAltaCuenta(CuentaDto cuentaDto) throws TipoCuentaAlreadyExistException, ClienteDoesntExistException, NotPosibleException, CuentaAlreadyExistException {
+    public Cuenta darDeAltaCuenta(CuentaDto cuentaDto) throws ClienteDoesntExistException, NotPosibleException, CuentaAlreadyExistException {
         // Crear una nueva cuenta y asignar valores desde cuentaDto
         Cuenta cuenta = settearTitular(cuentaDto);
 

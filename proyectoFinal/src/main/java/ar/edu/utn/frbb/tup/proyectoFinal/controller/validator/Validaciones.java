@@ -1,19 +1,15 @@
 package ar.edu.utn.frbb.tup.proyectoFinal.controller.validator;
 
-import ar.edu.utn.frbb.tup.proyectoFinal.model.TipoPersona;
 import ar.edu.utn.frbb.tup.proyectoFinal.model.exceptions.InputErrorException;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Locale;
 
 @Component
 public class Validaciones {
     public void validarDni(long dni) throws InputErrorException {
         String dniString = String.valueOf(dni);
-
         if(dniString.length() != 8){
             throw new InputErrorException("El DNI ingresado no es valido");
         }
@@ -72,12 +68,12 @@ public class Validaciones {
 
         String nroCuentaString = String.valueOf(numeroCuenta);
 
-        if(nroCuentaString.length() >= 8 || nroCuentaString.length() <= 1) {
+        if(nroCuentaString.length() > 8) {
             throw new IllegalArgumentException("El NUMERO DE CUENTA ingresado no es valido.");
 
         }
 
-        if (!nroCuentaString.matches("\\d{19}")) {
+        if (!nroCuentaString.matches("\\d{1,8}")) {
             throw new IllegalArgumentException("El NUMERO DE CUENTA ingresado no es valido.");
         }
     }
@@ -89,10 +85,7 @@ public class Validaciones {
 
         try{
             Double.parseDouble(String.valueOf(monto));
-            if(monto <= 0){
-                throw new InputErrorException("El MONTO ingresado no es valido.");
-            }
-        }catch (NumberFormatException | InputErrorException e){
+        }catch (NumberFormatException e){
             throw new IllegalArgumentException("El MONTO ingresado no es valido.");
         }
     }
