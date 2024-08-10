@@ -56,11 +56,13 @@ public class TransferenciaServiceTest {
         // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
         clienteDtoOrigen.setBanco("Banco A");
+        clienteDtoOrigen.setFechaNacimiento("2005-03-03");
         Cliente clienteOrigen = new Cliente(clienteDtoOrigen);
 
         // Creo el ClienteDto y Cliente para cuentaDestino
         ClienteDto clienteDtoDestino = new ClienteDto();
         clienteDtoDestino.setBanco("Banco A");
+        clienteDtoDestino.setFechaNacimiento("2005-03-03");
         Cliente clienteDestino = new Cliente(clienteDtoDestino);
 
         Cuenta cuentaOrigen = new Cuenta();
@@ -154,11 +156,13 @@ public class TransferenciaServiceTest {
         // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
         clienteDtoOrigen.setBanco("Banco A");
+        clienteDtoOrigen.setFechaNacimiento("2005-03-03");
         Cliente clienteOrigen = new Cliente(clienteDtoOrigen);
 
         // Creo el ClienteDto y Cliente para cuentaDestino
         ClienteDto clienteDtoDestino = new ClienteDto();
         clienteDtoDestino.setBanco("Banco A");
+        clienteDtoDestino.setFechaNacimiento("2005-03-03");
         Cliente clienteDestino = new Cliente(clienteDtoDestino);
 
         Cuenta cuentaOrigen = new Cuenta();
@@ -192,11 +196,13 @@ public class TransferenciaServiceTest {
         // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
         clienteDtoOrigen.setBanco("Banco A");
+        clienteDtoOrigen.setFechaNacimiento("2005-03-03");
         Cliente clienteOrigen = new Cliente(clienteDtoOrigen);
 
         // Creo el ClienteDto y Cliente para cuentaDestino
         ClienteDto clienteDtoDestino = new ClienteDto();
         clienteDtoDestino.setBanco("Banco B"); //Bancos diferentes
+        clienteDtoDestino.setFechaNacimiento("2005-03-03");
         Cliente clienteDestino = new Cliente(clienteDtoDestino);
 
         Cuenta cuentaOrigen = new Cuenta();
@@ -236,11 +242,13 @@ public class TransferenciaServiceTest {
         // Creo el ClienteDto y Cliente para cuentaOrigen
         ClienteDto clienteDtoOrigen = new ClienteDto();
         clienteDtoOrigen.setBanco("Banco A");
+        clienteDtoOrigen.setFechaNacimiento("2005-03-03");
         Cliente clienteOrigen = new Cliente(clienteDtoOrigen);
 
         // Creo el ClienteDto y Cliente para cuentaDestino
         ClienteDto clienteDtoDestino = new ClienteDto();
         clienteDtoDestino.setBanco("Banco B"); // Bancos diferentes
+        clienteDtoDestino.setFechaNacimiento("2005-03-03");
         Cliente clienteDestino = new Cliente(clienteDtoDestino);
 
         Cuenta cuentaOrigen = new Cuenta();

@@ -164,7 +164,7 @@ public class ClienteServiceTest {
 //PUT
 
     @Test
-    public void actualizarCliente() throws ClienteDoesntExistException, NotPosibleException {
+    public void actualizarCliente() throws ClienteDoesntExistException, NotPosibleException, InputErrorException {
         long dniAntiguo = 38944251;
 
         when(clienteDao.find(dniAntiguo)).thenReturn(cliente);
